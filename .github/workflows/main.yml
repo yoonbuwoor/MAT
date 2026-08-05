@@ -1,0 +1,98 @@
+name: Construire APK Moi Geomaticien
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    name: Generer l'APK Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+
+      - name: Installer Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Installer Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Afficher la version de Flutter
+        run: flutter --version
+
+      - name: Creer la plateforme Android si elle est absente
+        shell: bash
+        run: |
+          if [ ! -d "android" ]; then
+            TEMP_SOURCE="$(mktemp -d)"
+
+            cp -R lib "$TEMP_SOURCE/lib"
+            cp pubspec.yaml "$TEMP_SOURCE/pubspec.yaml"
+
+            if [ -d "assets" ]; then
+              cp -R assets "$TEMP_SOURCE/assets"
+            fi
+
+            if [ -f "analysis_options.yaml" ]; then
+              cp analysis_options.yaml "$TEMP_SOURCE/analysis_options.yaml"
+            fi
+
+            if [ -d "test" ]; then
+              cp -R test "$TEMP_SOURCE/test"
+            fi
+
+            flutter create \
+              --org com.novateur221 \
+              --project-name moi_geomaticien \
+              --platforms android \
+              .
+
+            rm -rf lib assets test
+            cp -R "$TEMP_SOURCE/lib" ./lib
+            cp "$TEMP_SOURCE/pubspec.yaml" ./pubspec.yaml
+
+            if [ -d "$TEMP_SOURCE/assets" ]; then
+              cp -R "$TEMP_SOURCE/assets" ./assets
+            fi
+
+            if [ -f "$TEMP_SOURCE/analysis_options.yaml" ]; then
+              cp "$TEMP_SOURCE/analysis_options.yaml" ./analysis_options.yaml
+            fi
+
+            if [ -d "$TEMP_SOURCE/test" ]; then
+              cp -R "$TEMP_SOURCE/test" ./test
+            fi
+          fi
+
+      - name: Installer les dependances
+        run: flutter pub get
+
+      - name: Construire l'APK release
+        run: flutter build apk --release
+
+      - name: Renommer l'APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk Moi_Geomaticien.apk
+
+      - name: Publier l'APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Moi-Geomaticien-APK
+          path: Moi_Geomaticien.apk
+          if-no-files-found: error
+          retention-days: 30
