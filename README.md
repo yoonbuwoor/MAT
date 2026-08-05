@@ -1,3 +1,8 @@
+## Mise à jour V1.1
+
+- Nouvel écran d’entrée avec la devise : « Que nul n’entre ici s’il n’est Géomaticien. »
+- L’utilisateur valide l’entrée avec le bouton « Entrer dans l’application ».
+
 # Moi, Géomaticien
 
 Application Flutter mobile conçue comme un livre de poche pour les étudiants et professionnels de la géomatique.
