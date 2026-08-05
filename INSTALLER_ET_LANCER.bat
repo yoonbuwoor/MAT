@@ -35,6 +35,14 @@ rmdir /s /q .backup_source
 flutter pub get
 if errorlevel 1 goto :error
 
+echo Application du logo comme icone Android...
+dart run flutter_launcher_icons
+if errorlevel 1 goto :error
+
+echo Configuration du nom visible...
+powershell -NoProfile -Command "$p='android/app/src/main/AndroidManifest.xml'; (Get-Content $p -Raw).Replace('moi_geomaticien','Moi, Géomaticien') | Set-Content $p -Encoding UTF8"
+if errorlevel 1 goto :error
+
 echo.
 echo Projet pret. Lancement de l'application...
 flutter run

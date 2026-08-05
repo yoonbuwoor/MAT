@@ -11,242 +11,324 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = controller.themeMode == ThemeMode.dark;
+    final completedTopics = controller.completedTopics.length;
+    final completedMissions = controller.completedMissions.length;
+    final hasProgress = controller.xp > 0 ||
+        completedTopics > 0 ||
+        completedMissions > 0 ||
+        controller.observations.isNotEmpty;
+
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 110),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 122),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
+              ScreenHeader(
+                eyebrow: 'Mon parcours',
+                title: 'Un profil basé sur ce que tu fais',
+                subtitle:
+                    'Aucun score inventé : les indicateurs évoluent uniquement quand tu termines une fiche, un exercice ou une observation.',
+                trailing: IconButton(
+                  tooltip: 'Réinitialiser le parcours',
+                  onPressed: hasProgress
+                      ? () => _confirmReset(context)
+                      : null,
+                  icon: const Icon(Icons.restart_alt_rounded),
+                ),
+              ),
+              const SizedBox(height: 22),
+              _IdentityCard(controller: controller),
+              const SizedBox(height: 24),
+              const PurposePanel(
+                icon: Icons.insights_rounded,
+                title: 'Comment lire cette page ?',
+                description:
+                    'Elle montre ta progression réelle. Une fiche rapporte 25 XP, un exercice 50 XP et une observation terrain 10 XP.',
+                steps: ['Apprendre', 'Valider', 'Voir progresser le profil'],
+                color: AppTheme.purple,
+              ),
+              const SizedBox(height: 28),
               const SectionTitle(
-                title: 'Moi',
-                subtitle: 'Mon identité, mes compétences et mon évolution.',
+                title: 'Activité réelle',
+                subtitle: 'Tous les compteurs ont été remis à zéro.',
               ),
-              const SizedBox(height: 18),
-              Container(
-                padding: const EdgeInsets.all(22),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppTheme.purple, AppTheme.coral],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: _StatCard(
+                      value: '$completedTopics',
+                      label: 'Fiches maîtrisées',
+                      icon: Icons.auto_stories_rounded,
+                      color: AppTheme.purple,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(28),
-                ),
-                child: Column(
-                  children: [
-                    const CircleAvatar(
-                      radius: 38,
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppTheme.purple,
-                      child: Icon(Icons.person, size: 42),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _StatCard(
+                      value: '$completedMissions',
+                      label: 'Exercices terminés',
+                      icon: Icons.task_alt_rounded,
+                      color: AppTheme.teal,
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Mon passeport géomatique',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 21,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Niveau ${controller.level} • ${controller.xp} XP',
-                      style: TextStyle(color: Colors.white.withOpacity(.84)),
-                    ),
-                    const SizedBox(height: 18),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ProfileStat(
-                            value: '${controller.completedTopics.length}',
-                            label: 'Fiches maîtrisées',
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _ProfileStat(
-                            value: '${controller.completedMissions.length}',
-                            label: 'Missions validées',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 26),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _StatCard(
+                      value: '${controller.observations.length}',
+                      label: 'Notes terrain',
+                      icon: Icons.location_on_outlined,
+                      color: AppTheme.coral,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _StatCard(
+                      value: '${controller.favoriteTopics.length}',
+                      label: 'Fiches favorites',
+                      icon: Icons.bookmark_rounded,
+                      color: AppTheme.orange,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
               const SectionTitle(
                 title: 'Compétences',
-                subtitle: 'Une première estimation à partir de ton activité.',
+                subtitle:
+                    'Les domaines apparaîtront après tes premières validations.',
               ),
               const SizedBox(height: 14),
-              const _SkillCard(),
-              const SizedBox(height: 26),
-              const SectionTitle(title: 'Badges'),
-              const SizedBox(height: 14),
-              SizedBox(
-                height: 112,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    _Badge(icon: Icons.public, title: 'Maître des projections', unlocked: true),
-                    _Badge(icon: Icons.map_outlined, title: 'Cartographe débutant', unlocked: true),
-                    _Badge(icon: Icons.grid_on_rounded, title: 'Analyste raster', unlocked: false),
-                    _Badge(icon: Icons.location_searching, title: 'Explorateur terrain', unlocked: false),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 26),
-              const SectionTitle(title: 'Réglages'),
+              if (!hasProgress)
+                const EmptyStateCard(
+                  icon: Icons.radar_rounded,
+                  title: 'Aucune compétence évaluée pour le moment',
+                  message:
+                      'Lis une fiche ou termine un exercice. L’application construira ensuite un profil sans inventer de pourcentage.',
+                )
+              else
+                _CompetenceSummary(controller: controller),
+              const SizedBox(height: 28),
+              const SectionTitle(title: 'Préférences'),
               const SizedBox(height: 14),
               Card(
                 child: Column(
                   children: [
                     SwitchListTile(
-                      secondary: Icon(dark ? Icons.dark_mode : Icons.light_mode),
-                      title: const Text('Mode sombre', style: TextStyle(fontWeight: FontWeight.w800)),
-                      subtitle: const Text('Adapter le confort visuel de l’application.'),
-                      value: dark,
+                      value: controller.themeMode == ThemeMode.dark,
                       onChanged: controller.toggleTheme,
+                      secondary: const Icon(Icons.dark_mode_outlined),
+                      title: const Text(
+                        'Mode sombre',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                      subtitle: const Text(
+                        'Modifie uniquement le confort visuel.',
+                      ),
                     ),
-                    const Divider(height: 1),
+                    const Divider(),
                     ListTile(
-                      leading: const Icon(Icons.download_for_offline_outlined),
-                      title: const Text('Contenus hors connexion', style: TextStyle(fontWeight: FontWeight.w800)),
-                      subtitle: Text('${learningTopics.length} fiches intégrées dans l’application'),
-                      trailing: const Icon(Icons.check_circle, color: Colors.green),
+                      leading: const Icon(Icons.offline_pin_outlined),
+                      title: const Text(
+                        'Contenus hors connexion',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                      subtitle: Text(
+                        '${learningTopics.length} fiches sont directement intégrées dans l’application.',
+                      ),
                     ),
-                    const Divider(height: 1),
+                    const Divider(),
                     const ListTile(
-                      leading: Icon(Icons.language),
-                      title: Text('Langue', style: TextStyle(fontWeight: FontWeight.w800)),
-                      subtitle: Text('Français'),
-                      trailing: Icon(Icons.chevron_right),
+                      leading: Icon(Icons.language_rounded),
+                      title: Text(
+                        'Langue',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                      subtitle: Text('Français — autres langues prévues plus tard.'),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 26),
-              const SectionTitle(title: 'À propos'),
-              const SizedBox(height: 14),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: Image.asset(
-                              'assets/images/novateur221.png',
-                              width: 58,
-                              height: 58,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          const Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Une application Novateur221',
-                                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-                                ),
-                                SizedBox(height: 4),
-                                Text('Conçue pour accompagner les géomaticiens en formation et en activité.'),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: AppTheme.coral.withOpacity(.08),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Text(
-                          'Moi, Géomaticien — La géomatique dans votre poche.\nVersion 1.0.0',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              const SizedBox(height: 28),
+              _AboutCard(),
             ]),
           ),
         ),
       ],
     );
   }
+
+  Future<void> _confirmReset(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remettre le parcours à zéro ?'),
+        content: const Text(
+          'Les fiches validées, les exercices, les favoris et les observations terrain seront supprimés de cette session.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Réinitialiser'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      controller.resetProgress();
+    }
+  }
 }
 
-class _ProfileStat extends StatelessWidget {
-  const _ProfileStat({required this.value, required this.label});
+class _IdentityCard extends StatelessWidget {
+  const _IdentityCard({required this.controller});
 
-  final String value;
-  final String label;
+  final AppController controller;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(.14),
-        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppTheme.ink, AppTheme.plum],
+        ),
+        borderRadius: BorderRadius.circular(32),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Text(value, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 3),
-          Text(label, textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withOpacity(.76), fontSize: 11)),
+          Container(
+            width: 72,
+            height: 72,
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Image.asset('assets/images/moi_geomaticien_logo.png'),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Géomaticien en progression',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'Niveau ${controller.level} • ${controller.xp} XP',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(.70),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _SkillCard extends StatelessWidget {
-  const _SkillCard();
+class _StatCard extends StatelessWidget {
+  const _StatCard({
+    required this.value,
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  final String value;
+  final String label;
+  final IconData icon;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    const skills = <String, double>{
-      'Cartographie': .75,
-      'QGIS et SIG': .68,
-      'Analyse spatiale': .54,
-      'Télédétection': .40,
-      'Bases de données': .30,
-      'Programmation': .18,
-    };
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SoftIcon(icon: icon, color: color, size: 42),
+            const SizedBox(height: 16),
+            Text(
+              value,
+              style: TextStyle(
+                color: color,
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(label, style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CompetenceSummary extends StatelessWidget {
+  const _CompetenceSummary({required this.controller});
+
+  final AppController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final counts = <String, int>{};
+    for (final topic in learningTopics) {
+      if (controller.completedTopics.contains(topic.id)) {
+        counts.update(topic.category, (value) => value + 1, ifAbsent: () => 1);
+      }
+    }
+
+    if (counts.isEmpty) {
+      return const EmptyStateCard(
+        icon: Icons.pending_actions_rounded,
+        title: 'Profil en construction',
+        message:
+            'Tes exercices sont enregistrés, mais valide aussi des fiches pour identifier tes domaines de connaissance.',
+      );
+    }
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(20),
         child: Column(
-          children: skills.entries.map((entry) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 15),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: Text(entry.key, style: const TextStyle(fontWeight: FontWeight.w800))),
-                      Text('${(entry.value * 100).round()} %'),
-                    ],
-                  ),
-                  const SizedBox(height: 7),
-                  LinearProgressIndicator(value: entry.value),
-                ],
+          children: counts.entries.map((entry) {
+            return ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const SoftIcon(
+                icon: Icons.check_rounded,
+                color: AppTheme.teal,
+                size: 42,
               ),
+              title: Text(
+                entry.key,
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+              subtitle: Text('${entry.value} fiche(s) maîtrisée(s)'),
             );
           }).toList(),
         ),
@@ -255,41 +337,41 @@ class _SkillCard extends StatelessWidget {
   }
 }
 
-class _Badge extends StatelessWidget {
-  const _Badge({required this.icon, required this.title, required this.unlocked});
-
-  final IconData icon;
-  final String title;
-  final bool unlocked;
-
+class _AboutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 126,
-      margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.all(13),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(20),
+        color: AppTheme.coral.withOpacity(.08),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: AppTheme.coral.withOpacity(.14)),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            unlocked ? icon : Icons.lock_outline,
-            color: unlocked ? AppTheme.coral : Colors.grey,
-            size: 29,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.asset(
+              'assets/images/novateur221.png',
+              width: 54,
+              height: 54,
+              fit: BoxFit.cover,
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              color: unlocked ? null : Colors.grey,
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Une application Novateur221',
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 6),
+                Text(
+                  'Conçue comme un compagnon méthodologique pour les étudiants et professionnels de la géomatique.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
             ),
           ),
         ],

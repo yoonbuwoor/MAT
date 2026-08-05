@@ -22,30 +22,49 @@ class _LearnScreenState extends State<LearnScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = ['Tout', ...{for (final item in learningTopics) item.category}];
+    final categories = <String>{
+      'Tout',
+      ...learningTopics.map((topic) => topic.category),
+    }.toList();
+
     final filtered = learningTopics.where((topic) {
-      final matchesQuery = topic.title.toLowerCase().contains(query.toLowerCase()) ||
-          topic.subtitle.toLowerCase().contains(query.toLowerCase());
+      final q = query.trim().toLowerCase();
       final matchesCategory = category == 'Tout' || topic.category == category;
-      return matchesQuery && matchesCategory;
+      final matchesQuery = q.isEmpty ||
+          topic.title.toLowerCase().contains(q) ||
+          topic.subtitle.toLowerCase().contains(q) ||
+          topic.definition.toLowerCase().contains(q);
+      return matchesCategory && matchesQuery;
     }).toList();
 
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 110),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 122),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              const SectionTitle(
-                title: 'Comprendre',
-                subtitle: 'Des fiches courtes pour maîtriser les idées essentielles.',
+              const ScreenHeader(
+                eyebrow: 'Livre de poche',
+                title: 'Comprendre sans se perdre',
+                subtitle:
+                    'Chaque fiche répond à une seule question avec une définition, un exemple et une erreur à éviter.',
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 22),
+              const PurposePanel(
+                icon: Icons.auto_stories_rounded,
+                title: 'À quoi sert cet espace ?',
+                description:
+                    'À retrouver rapidement une notion avant un cours, un exercice, une mission ou un examen. Ce n’est pas un long manuel.',
+                steps: ['Chercher', 'Lire', 'Retenir'],
+                color: AppTheme.purple,
+              ),
+              const SizedBox(height: 22),
               TextField(
                 onChanged: (value) => setState(() => query = value),
                 decoration: const InputDecoration(
-                  hintText: 'Rechercher une notion…',
-                  prefixIcon: Icon(Icons.search),
+                  hintText: 'Ex. projection, buffer, raster…',
+                  prefixIcon: Icon(Icons.search_rounded),
+                  suffixIcon: Icon(Icons.tune_rounded),
                 ),
               ),
               const SizedBox(height: 14),
@@ -65,56 +84,47 @@ class _LearnScreenState extends State<LearnScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 22),
-              Card(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
-                  onTap: () => Navigator.of(context).push(
+              const SizedBox(height: 26),
+              SectionTitle(
+                title: '${filtered.length} fiches disponibles',
+                subtitle: 'Lecture moyenne : moins de 3 minutes par notion.',
+                trailing: TextButton.icon(
+                  onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const GlossaryScreen()),
                   ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(18),
-                    child: Row(
-                      children: [
-                        SoftIcon(
-                          icon: Icons.sort_by_alpha_rounded,
-                          color: AppTheme.purple,
-                          size: 54,
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Glossaire géomatique',
-                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
-                              ),
-                              SizedBox(height: 4),
-                              Text('Retrouver rapidement les mots techniques.'),
-                            ],
-                          ),
-                        ),
-                        Icon(Icons.chevron_right),
-                      ],
-                    ),
-                  ),
+                  icon: const Icon(Icons.sort_by_alpha_rounded, size: 18),
+                  label: const Text('Glossaire'),
                 ),
               ),
-              const SizedBox(height: 24),
-              SectionTitle(
-                title: 'Fiches de poche',
-                subtitle: '${filtered.length} notion${filtered.length > 1 ? 's' : ''} disponible${filtered.length > 1 ? 's' : ''}',
-              ),
               const SizedBox(height: 14),
-              ...filtered.map((topic) => _TopicCard(
-                    topic: topic,
-                    controller: widget.controller,
-                  )),
               if (filtered.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 40),
-                  child: Center(child: Text('Aucune fiche ne correspond à cette recherche.')),
+                const EmptyStateCard(
+                  icon: Icons.search_off_rounded,
+                  title: 'Aucune fiche trouvée',
+                  message:
+                      'Essaie un mot plus simple ou choisis la catégorie « Tout ».',
+                )
+              else
+                ...filtered.map(
+                  (topic) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _TopicCard(
+                      topic: topic,
+                      isDone: widget.controller.completedTopics.contains(topic.id),
+                      isFavorite:
+                          widget.controller.favoriteTopics.contains(topic.id),
+                      onFavorite: () =>
+                          widget.controller.toggleFavorite(topic.id),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => TopicDetailScreen(
+                            controller: widget.controller,
+                            topic: topic,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
             ]),
           ),
@@ -125,73 +135,109 @@ class _LearnScreenState extends State<LearnScreen> {
 }
 
 class _TopicCard extends StatelessWidget {
-  const _TopicCard({required this.topic, required this.controller});
+  const _TopicCard({
+    required this.topic,
+    required this.isDone,
+    required this.isFavorite,
+    required this.onFavorite,
+    required this.onTap,
+  });
 
   final LearningTopic topic;
-  final AppController controller;
+  final bool isDone;
+  final bool isFavorite;
+  final VoidCallback onFavorite;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final done = controller.completedTopics.contains(topic.id);
-    final favorite = controller.favoriteTopics.contains(topic.id);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Card(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => TopicDetailScreen(controller: controller, topic: topic),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                SoftIcon(icon: topic.icon, color: topic.color, size: 52),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        topic.category.toUpperCase(),
-                        style: TextStyle(
-                          color: topic.color,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 10,
-                          letterSpacing: .8,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        topic.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        topic.subtitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(28),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(19),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 58,
+                height: 78,
+                decoration: BoxDecoration(
+                  color: topic.color.withOpacity(.11),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                Column(
+                child: Icon(topic.icon, color: topic.color, size: 28),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      tooltip: favorite ? 'Retirer des favoris' : 'Ajouter aux favoris',
-                      onPressed: () => controller.toggleFavorite(topic.id),
-                      icon: Icon(favorite ? Icons.bookmark : Icons.bookmark_border),
-                      color: favorite ? AppTheme.coral : null,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            topic.category.toUpperCase(),
+                            style: TextStyle(
+                              color: topic.color,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ),
+                        if (isDone)
+                          const Icon(Icons.verified_rounded,
+                              size: 18, color: AppTheme.teal),
+                      ],
                     ),
-                    if (done) const Icon(Icons.check_circle, color: Colors.green, size: 20),
+                    const SizedBox(height: 6),
+                    Text(topic.title,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 5),
+                    Text(
+                      topic.subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Text(
+                          'Définition • Exemple • Conseil',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const Spacer(),
+                        InkWell(
+                          onTap: onFavorite,
+                          borderRadius: BorderRadius.circular(30),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Icon(
+                              isFavorite
+                                  ? Icons.bookmark_rounded
+                                  : Icons.bookmark_border_rounded,
+                              size: 20,
+                              color: isFavorite
+                                  ? AppTheme.coral
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(.45),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

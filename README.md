@@ -1,51 +1,54 @@
-## Mise à jour V1.1
+# Moi, Géomaticien — Version 2.0
 
-- Nouvel écran d’entrée avec la devise : « Que nul n’entre ici s’il n’est Géomaticien. »
-- L’utilisateur valide l’entrée avec le bouton « Entrer dans l’application ».
+Application Flutter conçue par Novateur221 comme un compagnon méthodologique pour les étudiants et professionnels de la géomatique.
 
-# Moi, Géomaticien
+## Refonte V2
 
-Application Flutter mobile conçue comme un livre de poche pour les étudiants et professionnels de la géomatique.
+- Nouvelle interface épurée, soignée et plus professionnelle.
+- Navigation flottante : Accueil, Fiches, Exercices, Projets et Profil.
+- Accueil organisé selon le besoin réel de l’utilisateur, et non comme une grille générique de boutons.
+- Explication claire de l’utilité de chaque espace.
+- Progression entièrement remise à zéro : aucun score, projet ou pourcentage fictif.
+- Carnet de terrain présenté comme une saisie manuelle, sans prétendre récupérer automatiquement le GPS.
+- Outils rapides accompagnés de leur contexte d’utilisation et de leurs limites.
+- SOS Géomaticien transformé en procédure de diagnostic guidée.
+- Logo Moi, Géomaticien utilisé comme icône Android de l’application.
+- Mode clair et sombre.
 
-## Fonctions incluses
+## Écran d’entrée
 
-- Tableau de bord « Aujourd'hui »
-- Fiches de connaissances et glossaire
-- Exercices basés sur des cas pratiques
-- Atelier de projet avec workflow guidé
-- Carnet de terrain simplifié
-- Outils rapides de conversion et de calcul
-- SOS Géomaticien pour diagnostiquer les problèmes courants
-- Profil de compétences, badges et progression
-- Mode clair/sombre
-- Contenu entièrement utilisable hors connexion
+L’utilisateur voit au lancement :
 
-## Démarrage sur Windows
+> Que nul n’entre ici s’il n’est Géomaticien.
+
+## Lancer sur Windows
 
 1. Installer Flutter et Android Studio.
-2. Extraire ce dossier.
+2. Extraire le projet.
 3. Double-cliquer sur `INSTALLER_ET_LANCER.bat`.
 4. Choisir un émulateur ou connecter un téléphone Android.
 
-## Démarrage manuel
+Le script génère les dossiers natifs, installe les dépendances, applique le logo comme icône Android et lance l’application.
+
+## Lancer manuellement
 
 ```bash
 flutter create --org com.novateur221 --project-name moi_geomaticien --platforms=android,web .
 flutter pub get
+dart run flutter_launcher_icons
 flutter run
 ```
 
-Le package Android sera `com.novateur221.moi_geomaticien`.
+Le package Android est `com.novateur221.moi_geomaticien`.
 
-## Remarque
+## Générer l’APK avec GitHub Actions
 
-Le projet fourni contient tout le code de l'application et ses ressources. Les dossiers natifs Android/Web sont générés automatiquement par Flutter avec le script d'installation afin de rester compatibles avec la version de Flutter installée sur votre ordinateur.
+Le fichier `.github/workflows/main.yml` est prêt.
 
-## Construction automatique de l’APK avec GitHub
+1. Envoyer le projet sur GitHub.
+2. Ouvrir l’onglet **Actions**.
+3. Choisir **Construire APK Moi Geomaticien**.
+4. Cliquer sur **Run workflow**.
+5. Télécharger l’artifact **Moi-Geomaticien-V2-APK**.
 
-Le dossier `.github/workflows` contient une action prête à l’emploi. Après avoir poussé le projet sur GitHub :
-
-1. Ouvrir l’onglet **Actions** du dépôt.
-2. Choisir **Construire APK Moi Geomaticien**.
-3. Cliquer sur **Run workflow**.
-4. Télécharger l’artifact `moi-geomaticien-apk` à la fin du build.
+L’APK produit se nomme `Moi_Geomaticien_V2.apk`.

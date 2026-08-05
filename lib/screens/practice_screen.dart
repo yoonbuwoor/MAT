@@ -13,96 +13,52 @@ class PracticeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final done = controller.completedMissions.length;
+    final total = practiceMissions.length;
+
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 110),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 122),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              const SectionTitle(
-                title: 'Pratiquer',
-                subtitle: 'Résoudre des situations proches du travail réel.',
+              const ScreenHeader(
+                eyebrow: 'Cas pratiques',
+                title: 'Décider comme un géomaticien',
+                subtitle:
+                    'Ici, tu ne récites pas un cours. Tu choisis une méthode face à une situation réelle.',
               ),
-              const SizedBox(height: 18),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppTheme.purple,
-                  borderRadius: BorderRadius.circular(26),
-                ),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 28,
-                      backgroundColor: Colors.white24,
-                      foregroundColor: Colors.white,
-                      child: Icon(Icons.psychology_alt, size: 30),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Compétence par la décision',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            '${controller.completedMissions.length}/${practiceMissions.length} missions validées',
-                            style: TextStyle(color: Colors.white.withOpacity(.82)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 22),
+              const PurposePanel(
+                icon: Icons.task_alt_rounded,
+                title: 'À quoi servent les exercices ?',
+                description:
+                    'À entraîner ton raisonnement : quelles données utiliser, quel traitement choisir et comment interpréter le résultat.',
+                steps: ['Lire le cas', 'Choisir', 'Comprendre la correction'],
+                color: AppTheme.teal,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
+              _ProgressCard(done: done, total: total),
+              const SizedBox(height: 28),
               const SectionTitle(
                 title: 'Missions disponibles',
-                subtitle: 'Chaque correction explique la logique, pas seulement la réponse.',
+                subtitle: 'Commence par un cas débutant, puis augmente la difficulté.',
               ),
               const SizedBox(height: 14),
-              ...practiceMissions.map((mission) => _MissionCard(
+              ...practiceMissions.map(
+                (mission) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _MissionCard(
                     mission: mission,
-                    controller: controller,
-                  )),
-              const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SoftIcon(
-                        icon: Icons.upcoming_outlined,
-                        color: AppTheme.coral,
-                        size: 52,
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Prochain module',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                            ),
-                            const SizedBox(height: 5),
-                            const Text(
-                              'Corriger une carte interactive : légende, couleurs, hiérarchie et mise en page.',
-                            ),
-                          ],
+                    isDone: controller.completedMissions.contains(mission.id),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PracticeDetailScreen(
+                          controller: controller,
+                          mission: mission,
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -114,84 +70,170 @@ class PracticeScreen extends StatelessWidget {
   }
 }
 
-class _MissionCard extends StatelessWidget {
-  const _MissionCard({required this.mission, required this.controller});
+class _ProgressCard extends StatelessWidget {
+  const _ProgressCard({required this.done, required this.total});
 
-  final PracticeMission mission;
-  final AppController controller;
+  final int done;
+  final int total;
 
   @override
   Widget build(BuildContext context) {
-    final done = controller.completedMissions.contains(mission.id);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Card(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(24),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => PracticeDetailScreen(
-                controller: controller,
-                mission: mission,
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(17),
-            child: Row(
+    final progress = total == 0 ? 0.0 : done / total;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.ink,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 64,
+            height: 64,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                SoftIcon(
-                  icon: mission.icon,
-                  color: done ? Colors.green : AppTheme.coral,
-                  size: 54,
+                CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 7,
+                  backgroundColor: Colors.white.withOpacity(.11),
+                  color: AppTheme.orange,
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.coral.withOpacity(.10),
-                              borderRadius: BorderRadius.circular(99),
-                            ),
-                            child: Text(
-                              mission.level,
-                              style: const TextStyle(
-                                color: AppTheme.coral,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                          if (done) ...[
-                            const SizedBox(width: 7),
-                            const Icon(Icons.check_circle, color: Colors.green, size: 18),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        mission.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        mission.scenario,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                Text(
+                  '$done/$total',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-                const Icon(Icons.chevron_right),
               ],
             ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  done == 0 ? 'Aucune mission terminée' : '$done mission(s) terminée(s)',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  done == 0
+                      ? 'Ton score démarre à zéro. La première mission te rapporte 50 XP.'
+                      : 'Chaque correction validée renforce ton profil de compétences.',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(.68),
+                    fontSize: 12.5,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MissionCard extends StatelessWidget {
+  const _MissionCard({
+    required this.mission,
+    required this.isDone,
+    required this.onTap,
+  });
+
+  final PracticeMission mission;
+  final bool isDone;
+  final VoidCallback onTap;
+
+  Color _levelColor() {
+    switch (mission.level) {
+      case 'Débutant':
+        return AppTheme.teal;
+      case 'Intermédiaire':
+        return AppTheme.orange;
+      default:
+        return AppTheme.purple;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final levelColor = _levelColor();
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(28),
+        child: Padding(
+          padding: const EdgeInsets.all(19),
+          child: Row(
+            children: [
+              Container(
+                width: 58,
+                height: 86,
+                decoration: BoxDecoration(
+                  color: levelColor.withOpacity(.11),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(mission.icon, color: levelColor, size: 28),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: levelColor.withOpacity(.10),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Text(
+                            mission.level,
+                            style: TextStyle(
+                              color: levelColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        if (isDone)
+                          const Icon(
+                            Icons.verified_rounded,
+                            color: AppTheme.teal,
+                            size: 19,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 9),
+                    Text(
+                      mission.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      '1 situation • 4 choix • correction expliquée',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward_rounded),
+            ],
           ),
         ),
       ),

@@ -19,4 +19,12 @@ cp .backup_source/pubspec.yaml .backup_source/analysis_options.yaml .
 rm -rf .backup_source
 
 flutter pub get
+dart run flutter_launcher_icons
+python3 - <<'PYCODE'
+from pathlib import Path
+manifest = Path("android/app/src/main/AndroidManifest.xml")
+text = manifest.read_text(encoding="utf-8")
+text = text.replace('android:label="moi_geomaticien"', 'android:label="Moi, Géomaticien"')
+manifest.write_text(text, encoding="utf-8")
+PYCODE
 flutter run

@@ -4,12 +4,14 @@ import '../models/app_models.dart';
 class AppController extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.light;
   int currentTab = 0;
-  int xp = 320;
-  int weeklyGoal = 5;
-  int weeklyDone = 3;
 
-  final Set<String> completedTopics = <String>{'projection'};
-  final Set<String> favoriteTopics = <String>{'buffer'};
+  // L'application démarre volontairement à zéro.
+  int xp = 0;
+  int weeklyGoal = 3;
+  int weeklyDone = 0;
+
+  final Set<String> completedTopics = <String>{};
+  final Set<String> favoriteTopics = <String>{};
   final Set<String> completedMissions = <String>{};
   final List<FieldObservation> observations = <FieldObservation>[];
 
@@ -53,6 +55,17 @@ class AppController extends ChangeNotifier {
   void addObservation(FieldObservation observation) {
     observations.insert(0, observation);
     xp += 10;
+    notifyListeners();
+  }
+
+  void resetProgress() {
+    xp = 0;
+    weeklyDone = 0;
+    currentTab = 0;
+    completedTopics.clear();
+    favoriteTopics.clear();
+    completedMissions.clear();
+    observations.clear();
     notifyListeners();
   }
 
