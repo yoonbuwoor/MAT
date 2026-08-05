@@ -1,6 +1,6 @@
 name: Construire APK Moi Geomaticien
 
-on:
+"on":
   workflow_dispatch:
   push:
     branches:
@@ -12,20 +12,39 @@ permissions:
 
 jobs:
   build-apk:
-    name: Generer l'APK Android
+    name: Generer APK Android
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: Recuperer le projet
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Installer Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
+      - name: Detecter le dossier Flutter
+        shell: bash
+        run: |
+          set -e
+
+          if [ -f "pubspec.yaml" ]; then
+            APP_DIR="."
+          else
+            PUBSPEC_PATH="$(find . -maxdepth 3 -type f -name pubspec.yaml | head -n 1)"
+
+            if [ -z "$PUBSPEC_PATH" ]; then
+              echo "Erreur : aucun fichier pubspec.yaml trouve dans le depot."
+              exit 1
+            fi
+
+            APP_DIR="$(dirname "$PUBSPEC_PATH")"
+          fi
+
+          if [ ! -f "$APP_DIR/lib/main.dart" ]; then
+            echo "Erreur : lib/main.dart est absent dans $APP_DIR."
+            exit 1
+          fi
+
+          echo "APP_DIR=$APP_DIR" >> "$GITHUB_ENV"
+          echo "Projet Flutter detecte dans : $APP_DIR"
 
       - name: Installer Flutter
         uses: subosito/flutter-action@v2
@@ -34,27 +53,32 @@ jobs:
           cache: true
 
       - name: Afficher la version de Flutter
+        shell: bash
         run: flutter --version
 
-      - name: Creer la plateforme Android si elle est absente
+      - name: Creer la plateforme Android si necessaire
         shell: bash
         run: |
-          if [ ! -d "android" ]; then
-            TEMP_SOURCE="$(mktemp -d)"
+          set -e
+          cd "$APP_DIR"
 
-            cp -R lib "$TEMP_SOURCE/lib"
-            cp pubspec.yaml "$TEMP_SOURCE/pubspec.yaml"
+          if [ ! -d "android" ]; then
+            echo "Le dossier android est absent : generation en cours..."
+
+            BACKUP_DIR="$(mktemp -d)"
+            cp -R lib "$BACKUP_DIR/lib"
+            cp pubspec.yaml "$BACKUP_DIR/pubspec.yaml"
 
             if [ -d "assets" ]; then
-              cp -R assets "$TEMP_SOURCE/assets"
-            fi
-
-            if [ -f "analysis_options.yaml" ]; then
-              cp analysis_options.yaml "$TEMP_SOURCE/analysis_options.yaml"
+              cp -R assets "$BACKUP_DIR/assets"
             fi
 
             if [ -d "test" ]; then
-              cp -R test "$TEMP_SOURCE/test"
+              cp -R test "$BACKUP_DIR/test"
+            fi
+
+            if [ -f "analysis_options.yaml" ]; then
+              cp analysis_options.yaml "$BACKUP_DIR/analysis_options.yaml"
             fi
 
             flutter create \
@@ -64,33 +88,50 @@ jobs:
               .
 
             rm -rf lib assets test
-            cp -R "$TEMP_SOURCE/lib" ./lib
-            cp "$TEMP_SOURCE/pubspec.yaml" ./pubspec.yaml
+            cp -R "$BACKUP_DIR/lib" ./lib
+            cp "$BACKUP_DIR/pubspec.yaml" ./pubspec.yaml
 
-            if [ -d "$TEMP_SOURCE/assets" ]; then
-              cp -R "$TEMP_SOURCE/assets" ./assets
+            if [ -d "$BACKUP_DIR/assets" ]; then
+              cp -R "$BACKUP_DIR/assets" ./assets
             fi
 
-            if [ -f "$TEMP_SOURCE/analysis_options.yaml" ]; then
-              cp "$TEMP_SOURCE/analysis_options.yaml" ./analysis_options.yaml
+            if [ -d "$BACKUP_DIR/test" ]; then
+              cp -R "$BACKUP_DIR/test" ./test
             fi
 
-            if [ -d "$TEMP_SOURCE/test" ]; then
-              cp -R "$TEMP_SOURCE/test" ./test
+            if [ -f "$BACKUP_DIR/analysis_options.yaml" ]; then
+              cp "$BACKUP_DIR/analysis_options.yaml" ./analysis_options.yaml
             fi
+          else
+            echo "Le dossier android existe deja."
           fi
 
-      - name: Installer les dependances
-        run: flutter pub get
+      - name: Installer Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
 
-      - name: Construire l'APK release
-        run: flutter build apk --release
+      - name: Installer les dependances Flutter
+        shell: bash
+        run: |
+          cd "$APP_DIR"
+          flutter pub get
 
-      - name: Renommer l'APK
-        run: cp build/app/outputs/flutter-apk/app-release.apk Moi_Geomaticien.apk
+      - name: Construire APK release
+        shell: bash
+        run: |
+          cd "$APP_DIR"
+          flutter build apk --release
 
-      - name: Publier l'APK
-        uses: actions/upload-artifact@v4
+      - name: Preparer le fichier APK
+        shell: bash
+        run: |
+          cp "$APP_DIR/build/app/outputs/flutter-apk/app-release.apk" \
+             "$GITHUB_WORKSPACE/Moi_Geomaticien.apk"
+
+      - name: Publier APK
+        uses: actions/upload-artifact@v6
         with:
           name: Moi-Geomaticien-APK
           path: Moi_Geomaticien.apk
