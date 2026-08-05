@@ -181,7 +181,7 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                           SizedBox(height: 8),
                           Text(
-                            « Que nul n’entre ici\ns’il n’est Géomaticien. »,
+                            "« Que nul n’entre ici\ns’il n’est Géomaticien. »",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
