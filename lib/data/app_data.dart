@@ -173,6 +173,52 @@ const learningTopics = <LearningTopic>[
   ),
 ];
 
+
+const glossary = <String, String>{
+  'Analyse spatiale':
+      'Ensemble de méthodes permettant d’étudier les relations, répartitions et proximités entre objets géographiques.',
+  'Attribut':
+      'Information descriptive associée à un objet géographique, par exemple le nom, le type ou l’état d’un équipement.',
+  'Azimut':
+      'Angle horizontal mesuré depuis le nord, généralement dans le sens horaire, pour exprimer une direction.',
+  'Buffer':
+      'Zone tampon créée à une distance donnée autour d’un point, d’une ligne ou d’un polygone.',
+  'Datum':
+      'Référence géodésique utilisée pour définir la position d’un système de coordonnées par rapport à la Terre.',
+  'EPSG':
+      'Code normalisé permettant d’identifier précisément un système de référence de coordonnées.',
+  'Géocodage':
+      'Opération qui transforme une adresse ou un nom de lieu en coordonnées géographiques.',
+  'Géoréférencement':
+      'Opération qui associe une image, un plan ou une carte à des coordonnées réelles.',
+  'GNSS':
+      'Ensemble des systèmes mondiaux de navigation par satellites utilisés pour déterminer une position.',
+  'MNS':
+      'Modèle numérique de surface représentant l’altitude du sol et des objets présents au-dessus, comme les bâtiments ou la végétation.',
+  'MNT':
+      'Modèle numérique de terrain représentant l’altitude du sol en limitant autant que possible les objets situés au-dessus.',
+  'NDVI':
+      'Indice spectral utilisant le rouge et le proche infrarouge pour caractériser l’activité de la végétation.',
+  'Projection cartographique':
+      'Méthode mathématique transformant la surface courbe de la Terre en une représentation plane.',
+  'Raster':
+      'Modèle de données géographiques constitué d’une grille de cellules ou pixels.',
+  'Résolution spatiale':
+      'Dimension du plus petit détail observable dans une donnée raster ou une image.',
+  'SIG':
+      'Système d’information géographique permettant de stocker, analyser, croiser et représenter des données localisées.',
+  'Topologie':
+      'Ensemble des règles décrivant les relations spatiales entre objets, comme la connexion, l’adjacence ou l’inclusion.',
+  'UTM':
+      'Système de projection mondial découpant la Terre en zones et exprimant les coordonnées principalement en mètres.',
+  'Vecteur':
+      'Modèle de données représentant les objets géographiques par des points, des lignes et des polygones.',
+  'WGS 84':
+      'Système géodésique mondial couramment utilisé par le GPS pour exprimer latitude et longitude.',
+  'Web Mercator':
+      'Projection très utilisée dans les fonds de cartes web, identifiée notamment par le code EPSG:3857.',
+};
+
 const practiceMissions = <PracticeMission>[
   PracticeMission(
     id: 'flood',

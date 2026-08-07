@@ -1,3 +1,10 @@
+# Correctif V3.0.2
+
+- Correction du glossaire : restauration de la source `glossary`.
+- Correction de la null-safety dans la carte de relevé GPS.
+- Version portée à `3.0.2+5`.
+- Aucun changement de comportement des fonctions GPS, CSV ou GéoChasse.
+
 # Correctif V3.0.1
 
 - Corrige le conflit de dépendances entre `geolocator 14.0.3` et `share_plus 11.1.0`.

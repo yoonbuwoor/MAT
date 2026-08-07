@@ -354,6 +354,12 @@ class _GpsCaptureCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Les champs d’un Widget sont publics : Dart ne promeut pas toujours un
+    // champ nullable après un test de nullité. Une copie locale permet une
+    // promotion sûre et évite les erreurs de compilation en mode release.
+    final coordinate = displayed;
+    final currentPosition = position;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -377,24 +383,24 @@ class _GpsCaptureCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (position != null)
+              if (currentPosition != null)
                 const Icon(Icons.verified_rounded, color: AppTheme.teal),
             ],
           ),
           const SizedBox(height: 14),
-          if (displayed == null)
+          if (coordinate == null)
             Text(
               'Place-toi exactement sur le point puis lance la mesure.',
               style: TextStyle(color: Colors.white.withOpacity(.68)),
             )
           else ...[
             Text(
-              displayed.system,
+              coordinate.system,
               style: const TextStyle(color: AppTheme.orange, fontSize: 11),
             ),
             const SizedBox(height: 8),
             SelectableText(
-              'X : ${displayed.x}\nY : ${displayed.y}',
+              'X : ${coordinate.x}\nY : ${coordinate.y}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -403,10 +409,11 @@ class _GpsCaptureCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Précision estimée : ±${position!.accuracy.toStringAsFixed(1)} m',
-              style: TextStyle(color: Colors.white.withOpacity(.64)),
-            ),
+            if (currentPosition != null)
+              Text(
+                'Précision estimée : ±${currentPosition.accuracy.toStringAsFixed(1)} m',
+                style: TextStyle(color: Colors.white.withOpacity(.64)),
+              ),
           ],
           const SizedBox(height: 16),
           SizedBox(
