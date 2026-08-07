@@ -49,35 +49,3 @@ class PracticeMission {
   final int correctIndex;
   final String explanation;
 }
-
-class ProjectTemplate {
-  const ProjectTemplate({
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.steps,
-  });
-
-  final String title;
-  final String description;
-  final IconData icon;
-  final List<String> steps;
-}
-
-class FieldObservation {
-  const FieldObservation({
-    required this.name,
-    required this.category,
-    required this.note,
-    required this.latitude,
-    required this.longitude,
-    required this.createdAt,
-  });
-
-  final String name;
-  final String category;
-  final String note;
-  final double latitude;
-  final double longitude;
-  final DateTime createdAt;
-}
