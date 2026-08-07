@@ -1,7 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import '../models/app_models.dart';
+import '../models/geo_models.dart';
+import '../services/point_storage.dart';
 
 class AppController extends ChangeNotifier {
+  AppController() {
+    unawaited(_loadGeoPoints());
+  }
+
+  final PointStorage _pointStorage = PointStorage();
+
   ThemeMode themeMode = ThemeMode.light;
   int currentTab = 0;
 
@@ -13,7 +21,10 @@ class AppController extends ChangeNotifier {
   final Set<String> completedTopics = <String>{};
   final Set<String> favoriteTopics = <String>{};
   final Set<String> completedMissions = <String>{};
-  final List<FieldObservation> observations = <FieldObservation>[];
+
+  List<CapturedPoint> geoPoints = <CapturedPoint>[];
+  bool geoPointsLoading = true;
+  bool _disposed = false;
 
   void setTab(int value) {
     currentTab = value;
@@ -47,16 +58,25 @@ class AppController extends ChangeNotifier {
     }
   }
 
-  void rewardProject() {
-    xp += 20;
+  Future<void> addGeoPoint(CapturedPoint point) async {
+    geoPoints = <CapturedPoint>[point, ...geoPoints];
     notifyListeners();
+    await _pointStorage.savePoints(geoPoints);
   }
 
-  void addObservation(FieldObservation observation) {
-    observations.insert(0, observation);
-    xp += 10;
+  Future<void> deleteGeoPoint(String id) async {
+    geoPoints = geoPoints.where((point) => point.id != id).toList();
     notifyListeners();
+    await _pointStorage.savePoints(geoPoints);
   }
+
+  Future<void> clearGeoPoints() async {
+    geoPoints = <CapturedPoint>[];
+    notifyListeners();
+    await _pointStorage.savePoints(geoPoints);
+  }
+
+  Future<String> exportGeoPoints() => _pointStorage.exportCsv(geoPoints);
 
   void resetProgress() {
     xp = 0;
@@ -65,10 +85,24 @@ class AppController extends ChangeNotifier {
     completedTopics.clear();
     favoriteTopics.clear();
     completedMissions.clear();
-    observations.clear();
     notifyListeners();
   }
 
   int get level => 1 + (xp ~/ 250);
   double get weeklyProgress => weeklyGoal == 0 ? 0 : weeklyDone / weeklyGoal;
+
+  Future<void> _loadGeoPoints() async {
+    try {
+      geoPoints = await _pointStorage.loadPoints();
+    } finally {
+      geoPointsLoading = false;
+      if (!_disposed) notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
 }

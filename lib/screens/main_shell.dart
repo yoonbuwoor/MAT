@@ -3,8 +3,8 @@ import '../core/app_controller.dart';
 import '../core/app_theme.dart';
 import 'learn_screen.dart';
 import 'practice_screen.dart';
-import 'produce_screen.dart';
 import 'profile_screen.dart';
+import 'terrain_screen.dart';
 import 'today_screen.dart';
 
 class MainShell extends StatelessWidget {
@@ -18,7 +18,7 @@ class MainShell extends StatelessWidget {
       TodayScreen(controller: controller),
       LearnScreen(controller: controller),
       PracticeScreen(controller: controller),
-      ProduceScreen(controller: controller),
+      TerrainScreen(controller: controller),
       ProfileScreen(controller: controller),
     ];
 
@@ -52,7 +52,7 @@ class _ClassyNavigation extends StatelessWidget {
     _NavItem(Icons.home_outlined, Icons.home_rounded, 'Accueil'),
     _NavItem(Icons.auto_stories_outlined, Icons.auto_stories_rounded, 'Fiches'),
     _NavItem(Icons.task_alt_outlined, Icons.task_alt_rounded, 'Exercices'),
-    _NavItem(Icons.architecture_outlined, Icons.architecture_rounded, 'Projets'),
+    _NavItem(Icons.explore_outlined, Icons.explore_rounded, 'Terrain'),
     _NavItem(Icons.person_outline_rounded, Icons.person_rounded, 'Profil'),
   ];
 
@@ -97,9 +97,7 @@ class _ClassyNavigation extends StatelessWidget {
                     duration: const Duration(milliseconds: 220),
                     curve: Curves.easeOut,
                     decoration: BoxDecoration(
-                      color: selected
-                          ? AppTheme.ink
-                          : Colors.transparent,
+                      color: selected ? AppTheme.ink : Colors.transparent,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -128,9 +126,8 @@ class _ClassyNavigation extends StatelessWidget {
                                     .onSurface
                                     .withOpacity(.58),
                             fontSize: 10,
-                            fontWeight: selected
-                                ? FontWeight.w900
-                                : FontWeight.w700,
+                            fontWeight:
+                                selected ? FontWeight.w900 : FontWeight.w700,
                           ),
                         ),
                       ],
@@ -148,7 +145,6 @@ class _ClassyNavigation extends StatelessWidget {
 
 class _NavItem {
   const _NavItem(this.icon, this.selectedIcon, this.label);
-
   final IconData icon;
   final IconData selectedIcon;
   final String label;

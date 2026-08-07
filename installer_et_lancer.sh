@@ -1,30 +1,32 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 cd "$(dirname "$0")"
 
 command -v flutter >/dev/null 2>&1 || {
   echo "Flutter n'est pas installé ou n'est pas dans le PATH."
   exit 1
 }
+command -v python3 >/dev/null 2>&1 || {
+  echo "Python 3 est nécessaire pour configurer Android."
+  exit 1
+}
 
-rm -rf .backup_source
-mkdir -p .backup_source
-cp -R lib assets .backup_source/
-cp pubspec.yaml analysis_options.yaml .backup_source/
+if [ ! -d android ]; then
+  rm -rf .backup_source
+  mkdir -p .backup_source
+  cp -R lib assets tool .backup_source/
+  cp pubspec.yaml analysis_options.yaml .backup_source/
+  [ -d test ] && cp -R test .backup_source/ || true
 
-flutter create --org com.novateur221 --project-name moi_geomaticien --platforms=android,web .
-rm -rf lib assets
-cp -R .backup_source/lib .backup_source/assets .
-cp .backup_source/pubspec.yaml .backup_source/analysis_options.yaml .
-rm -rf .backup_source
+  flutter create --org com.novateur221 --project-name moi_geomaticien --platforms=android .
+  rm -rf lib assets tool test
+  cp -R .backup_source/lib .backup_source/assets .backup_source/tool .
+  cp .backup_source/pubspec.yaml .backup_source/analysis_options.yaml .
+  [ -d .backup_source/test ] && cp -R .backup_source/test . || true
+  rm -rf .backup_source
+fi
 
+python3 tool/configure_android.py
 flutter pub get
 dart run flutter_launcher_icons
-python3 - <<'PYCODE'
-from pathlib import Path
-manifest = Path("android/app/src/main/AndroidManifest.xml")
-text = manifest.read_text(encoding="utf-8")
-text = text.replace('android:label="moi_geomaticien"', 'android:label="Moi, Géomaticien"')
-manifest.write_text(text, encoding="utf-8")
-PYCODE
 flutter run

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/app_controller.dart';
 import '../core/app_theme.dart';
-import '../data/app_data.dart';
 import '../widgets/brand_widgets.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -15,8 +14,7 @@ class ProfileScreen extends StatelessWidget {
     final completedMissions = controller.completedMissions.length;
     final hasProgress = controller.xp > 0 ||
         completedTopics > 0 ||
-        completedMissions > 0 ||
-        controller.observations.isNotEmpty;
+        completedMissions > 0;
 
     return CustomScrollView(
       slivers: [
@@ -24,138 +22,61 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 122),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
-              ScreenHeader(
-                eyebrow: 'Mon parcours',
-                title: 'Un profil basé sur ce que tu fais',
+              const ScreenHeader(
+                eyebrow: 'Mon espace',
+                title: 'Une progression qui correspond à tes actions',
                 subtitle:
-                    'Aucun score inventé : les indicateurs évoluent uniquement quand tu termines une fiche, un exercice ou une observation.',
-                trailing: IconButton(
-                  tooltip: 'Réinitialiser le parcours',
-                  onPressed: hasProgress
-                      ? () => _confirmReset(context)
-                      : null,
-                  icon: const Icon(Icons.restart_alt_rounded),
-                ),
+                    'Les fiches comprises et les exercices réussis alimentent ton parcours. Les points GPS restent des données terrain et ne créent pas de faux score.',
               ),
               const SizedBox(height: 22),
               _IdentityCard(controller: controller),
-              const SizedBox(height: 24),
-              const PurposePanel(
-                icon: Icons.insights_rounded,
-                title: 'Comment lire cette page ?',
-                description:
-                    'Elle montre ta progression réelle. Une fiche rapporte 25 XP, un exercice 50 XP et une observation terrain 10 XP.',
-                steps: ['Apprendre', 'Valider', 'Voir progresser le profil'],
-                color: AppTheme.purple,
-              ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 22),
               const SectionTitle(
-                title: 'Activité réelle',
-                subtitle: 'Tous les compteurs ont été remis à zéro.',
+                title: 'Mon activité',
+                subtitle: 'Tout commence réellement à zéro.',
               ),
               const SizedBox(height: 14),
               Row(
                 children: [
                   Expanded(
-                    child: _StatCard(
+                    child: _MetricCard(
                       value: '$completedTopics',
-                      label: 'Fiches maîtrisées',
+                      label: 'Fiches comprises',
                       icon: Icons.auto_stories_rounded,
                       color: AppTheme.purple,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
-                    child: _StatCard(
+                    child: _MetricCard(
                       value: '$completedMissions',
-                      label: 'Exercices terminés',
+                      label: 'Exercices réussis',
                       icon: Icons.task_alt_rounded,
                       color: AppTheme.teal,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
+                  const SizedBox(width: 10),
                   Expanded(
-                    child: _StatCard(
-                      value: '${controller.observations.length}',
-                      label: 'Notes terrain',
-                      icon: Icons.location_on_outlined,
+                    child: _MetricCard(
+                      value: '${controller.geoPoints.length}',
+                      label: 'Points terrain',
+                      icon: Icons.place_rounded,
                       color: AppTheme.coral,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _StatCard(
-                      value: '${controller.favoriteTopics.length}',
-                      label: 'Fiches favorites',
-                      icon: Icons.bookmark_rounded,
-                      color: AppTheme.orange,
-                    ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 28),
-              const SectionTitle(
-                title: 'Compétences',
-                subtitle:
-                    'Les domaines apparaîtront après tes premières validations.',
-              ),
-              const SizedBox(height: 14),
-              if (!hasProgress)
-                const EmptyStateCard(
-                  icon: Icons.radar_rounded,
-                  title: 'Aucune compétence évaluée pour le moment',
-                  message:
-                      'Lis une fiche ou termine un exercice. L’application construira ensuite un profil sans inventer de pourcentage.',
-                )
-              else
-                _CompetenceSummary(controller: controller),
-              const SizedBox(height: 28),
-              const SectionTitle(title: 'Préférences'),
-              const SizedBox(height: 14),
-              Card(
-                child: Column(
-                  children: [
-                    SwitchListTile(
-                      value: controller.themeMode == ThemeMode.dark,
-                      onChanged: controller.toggleTheme,
-                      secondary: const Icon(Icons.dark_mode_outlined),
-                      title: const Text(
-                        'Mode sombre',
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      subtitle: const Text(
-                        'Modifie uniquement le confort visuel.',
-                      ),
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.offline_pin_outlined),
-                      title: const Text(
-                        'Contenus hors connexion',
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      subtitle: Text(
-                        '${learningTopics.length} fiches sont directement intégrées dans l’application.',
-                      ),
-                    ),
-                    const Divider(),
-                    const ListTile(
-                      leading: Icon(Icons.language_rounded),
-                      title: Text(
-                        'Langue',
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      subtitle: Text('Français — autres langues prévues plus tard.'),
-                    ),
-                  ],
+              const SizedBox(height: 24),
+              _SettingsCard(controller: controller),
+              const SizedBox(height: 18),
+              if (hasProgress)
+                OutlinedButton.icon(
+                  onPressed: () => _confirmReset(context),
+                  icon: const Icon(Icons.restart_alt_rounded),
+                  label: const Text('REMETTRE LA PROGRESSION À ZÉRO'),
                 ),
-              ),
-              const SizedBox(height: 28),
-              _AboutCard(),
+              const SizedBox(height: 24),
+              const _AboutCard(),
             ]),
           ),
         ),
@@ -167,9 +88,9 @@ class ProfileScreen extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remettre le parcours à zéro ?'),
+        title: const Text('Remettre la progression à zéro ?'),
         content: const Text(
-          'Les fiches validées, les exercices, les favoris et les observations terrain seront supprimés de cette session.',
+          'Les fiches, exercices et XP seront réinitialisés. Les points GPS ne seront pas supprimés.',
         ),
         actions: [
           TextButton(
@@ -183,16 +104,12 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
-
-    if (confirmed == true) {
-      controller.resetProgress();
-    }
+    if (confirmed == true) controller.resetProgress();
   }
 }
 
 class _IdentityCard extends StatelessWidget {
   const _IdentityCard({required this.controller});
-
   final AppController controller;
 
   @override
@@ -201,21 +118,21 @@ class _IdentityCard extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
+          colors: [AppTheme.ink, AppTheme.plum],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppTheme.ink, AppTheme.plum],
         ),
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(30),
       ),
       child: Row(
         children: [
           Container(
             width: 72,
             height: 72,
-            padding: const EdgeInsets.all(7),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(22),
             ),
             child: Image.asset('assets/images/moi_geomaticien_logo.png'),
           ),
@@ -228,16 +145,26 @@ class _IdentityCard extends StatelessWidget {
                   'Géomaticien en progression',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 17,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  'Niveau ${controller.level} • ${controller.xp} XP',
+                  '${controller.xp} XP • Niveau ${controller.level}',
+                  style: const TextStyle(
+                    color: AppTheme.orange,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  controller.xp == 0
+                      ? 'Le parcours est encore vierge.'
+                      : 'Continue avec une fiche ou un exercice.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(.70),
-                    fontWeight: FontWeight.w700,
+                    color: Colors.white.withOpacity(.65),
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -249,8 +176,8 @@ class _IdentityCard extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({
     required this.value,
     required this.label,
     required this.icon,
@@ -264,73 +191,61 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(17),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SoftIcon(icon: icon, color: color, size: 42),
-            const SizedBox(height: 16),
-            Text(
-              value,
-              style: TextStyle(
-                color: color,
-                fontSize: 25,
-                fontWeight: FontWeight.w900,
-              ),
+    return Container(
+      constraints: const BoxConstraints(minHeight: 142),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(23),
+        border: Border.all(color: AppTheme.ink.withOpacity(.06)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color),
+          const Spacer(),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontSize: 25,
+              fontWeight: FontWeight.w900,
             ),
-            const SizedBox(height: 3),
-            Text(label, style: Theme.of(context).textTheme.bodySmall),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10.5),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _CompetenceSummary extends StatelessWidget {
-  const _CompetenceSummary({required this.controller});
-
+class _SettingsCard extends StatelessWidget {
+  const _SettingsCard({required this.controller});
   final AppController controller;
 
   @override
   Widget build(BuildContext context) {
-    final counts = <String, int>{};
-    for (final topic in learningTopics) {
-      if (controller.completedTopics.contains(topic.id)) {
-        counts.update(topic.category, (value) => value + 1, ifAbsent: () => 1);
-      }
-    }
-
-    if (counts.isEmpty) {
-      return const EmptyStateCard(
-        icon: Icons.pending_actions_rounded,
-        title: 'Profil en construction',
-        message:
-            'Tes exercices sont enregistrés, mais valide aussi des fiches pour identifier tes domaines de connaissance.',
-      );
-    }
-
+    final dark = controller.themeMode == ThemeMode.dark;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: counts.entries.map((entry) {
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const SoftIcon(
-                icon: Icons.check_rounded,
-                color: AppTheme.teal,
-                size: 42,
-              ),
-              title: Text(
-                entry.key,
-                style: const TextStyle(fontWeight: FontWeight.w900),
-              ),
-              subtitle: Text('${entry.value} fiche(s) maîtrisée(s)'),
-            );
-          }).toList(),
+        padding: const EdgeInsets.all(18),
+        child: SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: dark,
+          onChanged: controller.toggleTheme,
+          secondary: const SoftIcon(
+            icon: Icons.dark_mode_outlined,
+            color: AppTheme.purple,
+          ),
+          title: const Text(
+            'Mode sombre',
+            style: TextStyle(fontWeight: FontWeight.w900),
+          ),
+          subtitle: const Text('Adapter l’interface aux conditions de lecture.'),
         ),
       ),
     );
@@ -338,6 +253,8 @@ class _CompetenceSummary extends StatelessWidget {
 }
 
 class _AboutCard extends StatelessWidget {
+  const _AboutCard();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -368,7 +285,7 @@ class _AboutCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 6),
                 Text(
-                  'Conçue comme un compagnon méthodologique pour les étudiants et professionnels de la géomatique.',
+                  'Moi, Géomaticien associe apprentissage court, relevé de points et jeu géographique dans une interface simple.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],

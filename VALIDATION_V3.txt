@@ -1,0 +1,15 @@
+MOI, GÉOMATICIEN V3 — RAPPORT DE VALIDATION
+
+Validations effectuées dans l’environnement de génération :
+- structure YAML de pubspec.yaml et du workflow GitHub : conforme ;
+- imports Dart locaux : tous résolus ;
+- structure lexicale des 26 fichiers Dart : conforme ;
+- calcul UTM contrôlé sur plusieurs positions avec PROJ/pyproj ;
+- images d’icône Android : 1024 x 1024, premier plan adaptatif transparent ;
+- script Android testé sur un manifeste synthétique ;
+- permissions GPS, nom d’application, minSdk 24 et référence ic_launcher vérifiés ;
+- anciens écrans demandés supprimés ;
+- workflow configuré pour analyser, tester et compiler l’APK release.
+
+Limite : le SDK Flutter n’est pas installé dans l’environnement local de génération.
+La compilation finale est donc effectuée par le workflow GitHub Actions inclus.

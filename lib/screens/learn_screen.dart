@@ -7,36 +7,13 @@ import '../widgets/brand_widgets.dart';
 import 'glossary_screen.dart';
 import 'topic_detail_screen.dart';
 
-class LearnScreen extends StatefulWidget {
+class LearnScreen extends StatelessWidget {
   const LearnScreen({super.key, required this.controller});
 
   final AppController controller;
 
   @override
-  State<LearnScreen> createState() => _LearnScreenState();
-}
-
-class _LearnScreenState extends State<LearnScreen> {
-  String query = '';
-  String category = 'Tout';
-
-  @override
   Widget build(BuildContext context) {
-    final categories = <String>{
-      'Tout',
-      ...learningTopics.map((topic) => topic.category),
-    }.toList();
-
-    final filtered = learningTopics.where((topic) {
-      final q = query.trim().toLowerCase();
-      final matchesCategory = category == 'Tout' || topic.category == category;
-      final matchesQuery = q.isEmpty ||
-          topic.title.toLowerCase().contains(q) ||
-          topic.subtitle.toLowerCase().contains(q) ||
-          topic.definition.toLowerCase().contains(q);
-      return matchesCategory && matchesQuery;
-    }).toList();
-
     return CustomScrollView(
       slivers: [
         SliverPadding(
@@ -45,49 +22,23 @@ class _LearnScreenState extends State<LearnScreen> {
             delegate: SliverChildListDelegate([
               const ScreenHeader(
                 eyebrow: 'Livre de poche',
-                title: 'Comprendre sans se perdre',
+                title: 'Une notion, une fiche, une idée claire',
                 subtitle:
-                    'Chaque fiche répond à une seule question avec une définition, un exemple et une erreur à éviter.',
+                    'La bibliothèque est volontairement directe : aucun filtre ni moteur compliqué. Parcours les fiches essentielles dans l’ordre qui te convient.',
               ),
               const SizedBox(height: 22),
               const PurposePanel(
                 icon: Icons.auto_stories_rounded,
-                title: 'À quoi sert cet espace ?',
+                title: 'Comment utiliser les fiches ?',
                 description:
-                    'À retrouver rapidement une notion avant un cours, un exercice, une mission ou un examen. Ce n’est pas un long manuel.',
-                steps: ['Chercher', 'Lire', 'Retenir'],
+                    'Ouvre une notion avant un cours, un exercice ou une sortie terrain. Lis l’exemple, repère l’erreur fréquente, puis marque la fiche comme comprise.',
+                steps: ['Lire', 'Relier à un cas', 'Valider'],
                 color: AppTheme.purple,
               ),
-              const SizedBox(height: 22),
-              TextField(
-                onChanged: (value) => setState(() => query = value),
-                decoration: const InputDecoration(
-                  hintText: 'Ex. projection, buffer, raster…',
-                  prefixIcon: Icon(Icons.search_rounded),
-                  suffixIcon: Icon(Icons.tune_rounded),
-                ),
-              ),
-              const SizedBox(height: 14),
-              SizedBox(
-                height: 42,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final item = categories[index];
-                    return ChoiceChip(
-                      selected: category == item,
-                      label: Text(item),
-                      onSelected: (_) => setState(() => category = item),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 26),
+              const SizedBox(height: 24),
               SectionTitle(
-                title: '${filtered.length} fiches disponibles',
-                subtitle: 'Lecture moyenne : moins de 3 minutes par notion.',
+                title: '${learningTopics.length} fiches essentielles',
+                subtitle: 'Lecture moyenne : moins de trois minutes.',
                 trailing: TextButton.icon(
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const GlossaryScreen()),
@@ -97,35 +48,25 @@ class _LearnScreenState extends State<LearnScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              if (filtered.isEmpty)
-                const EmptyStateCard(
-                  icon: Icons.search_off_rounded,
-                  title: 'Aucune fiche trouvée',
-                  message:
-                      'Essaie un mot plus simple ou choisis la catégorie « Tout ».',
-                )
-              else
-                ...filtered.map(
-                  (topic) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _TopicCard(
-                      topic: topic,
-                      isDone: widget.controller.completedTopics.contains(topic.id),
-                      isFavorite:
-                          widget.controller.favoriteTopics.contains(topic.id),
-                      onFavorite: () =>
-                          widget.controller.toggleFavorite(topic.id),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => TopicDetailScreen(
-                            controller: widget.controller,
-                            topic: topic,
-                          ),
+              ...learningTopics.map(
+                (topic) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _TopicCard(
+                    topic: topic,
+                    isDone: controller.completedTopics.contains(topic.id),
+                    isFavorite: controller.favoriteTopics.contains(topic.id),
+                    onFavorite: () => controller.toggleFavorite(topic.id),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => TopicDetailScreen(
+                          controller: controller,
+                          topic: topic,
                         ),
                       ),
                     ),
                   ),
                 ),
+              ),
             ]),
           ),
         ),

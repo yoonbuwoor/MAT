@@ -153,7 +153,7 @@ class _SplashScreenState extends State<SplashScreen>
                       const SizedBox(height: 7),
                       const Center(
                         child: Text(
-                          'Comprendre • Pratiquer • Produire',
+                          'Comprendre • Relever • Explorer',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: AppTheme.purple,

@@ -1,15 +1,19 @@
 name: moi_geomaticien
-description: Le compagnon méthodologique du géomaticien, par Novateur221.
+description: Le livre de poche et compagnon terrain du géomaticien, par Novateur221.
 publish_to: "none"
-version: 2.0.0+2
+version: 3.0.0+3
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  geolocator: ^14.0.3
+  path_provider: ^2.1.6
+  share_plus: 11.1.0
+  cross_file: ^0.3.4+2
 
 dev_dependencies:
   flutter_test:
@@ -26,9 +30,9 @@ flutter:
     - assets/images/app_icon_foreground.png
 
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: true
   ios: false
   image_path: "assets/images/app_icon.png"
-  min_sdk_android: 21
+  min_sdk_android: 24
   adaptive_icon_background: "#FAF7F4"
   adaptive_icon_foreground: "assets/images/app_icon_foreground.png"

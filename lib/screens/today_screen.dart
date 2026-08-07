@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../core/app_controller.dart';
 import '../core/app_theme.dart';
 import '../widgets/brand_widgets.dart';
-import '../widgets/sos_sheet.dart';
+import 'current_location_screen.dart';
+import 'geocaching_screen.dart';
 import 'glossary_screen.dart';
-import 'quick_tools_screen.dart';
+import 'point_capture_screen.dart';
 
 class TodayScreen extends StatelessWidget {
   const TodayScreen({super.key, required this.controller});
@@ -20,77 +21,68 @@ class TodayScreen extends StatelessWidget {
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               ScreenHeader(
-                eyebrow: 'Ton compagnon de poche',
-                title: 'De quoi as-tu besoin aujourd’hui ?',
+                eyebrow: 'Moi, Géomaticien',
+                title: 'Apprendre ici. Mesurer dehors.',
                 subtitle:
-                    'Choisis une action précise. Chaque espace explique clairement ce qu’il apporte avant de commencer.',
-                trailing: const _HelpButton(),
+                    'Un livre de poche clair et trois outils terrain réellement utiles : se localiser, relever des points et jouer au géocaching.',
+                trailing: const _AboutButton(),
               ),
               const SizedBox(height: 24),
-              _SignaturePanel(controller: controller),
+              _HeroPanel(controller: controller),
               const SizedBox(height: 28),
               const SectionTitle(
-                title: 'Choisir une action',
-                subtitle: 'Pas de menu compliqué : pars directement de ton besoin.',
+                title: 'Sur le terrain',
+                subtitle:
+                    'Le GPS du téléphone fournit une position indicative : vérifie toujours la précision affichée.',
               ),
               const SizedBox(height: 14),
-              _PrimaryAction(
-                icon: Icons.auto_stories_rounded,
-                title: 'Comprendre une notion',
+              _FeatureDoor(
+                icon: Icons.my_location_rounded,
+                title: 'Afficher ma localisation',
                 description:
-                    'Définition courte, exemple concret et erreur fréquente à éviter.',
-                label: 'Ouvrir les fiches',
-                color: AppTheme.purple,
-                onTap: () => controller.setTab(1),
+                    'Obtenir X et Y dans le système choisi : WGS 84, DMS, UTM automatique ou Web Mercator.',
+                label: 'LOCALISER MAINTENANT',
+                color: AppTheme.teal,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const CurrentLocationScreen(),
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
-                    child: _CompactAction(
-                      icon: Icons.task_alt_rounded,
-                      title: 'M’entraîner',
-                      description: 'Résoudre un cas et comprendre la correction.',
-                      color: AppTheme.teal,
-                      onTap: () => controller.setTab(2),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _CompactAction(
-                      icon: Icons.architecture_rounded,
-                      title: 'Préparer un projet',
-                      description: 'Structurer une carte, une étude ou un mémoire.',
-                      color: AppTheme.coral,
-                      onTap: () => controller.setTab(3),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _SlimAction(
-                      icon: Icons.calculate_outlined,
-                      title: 'Outils rapides',
-                      subtitle: 'Coordonnées, échelle, distance',
+                    child: _CompactDoor(
+                      icon: Icons.add_location_alt_rounded,
+                      title: 'Relever des points',
+                      description:
+                          'Nom, X, Y, précision et attributs personnalisés.',
+                      color: AppTheme.purple,
+                      badge: '${controller.geoPoints.length} point(s)',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const QuickToolsScreen(),
+                          builder: (_) => PointCaptureScreen(
+                            controller: controller,
+                          ),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _SlimAction(
-                      icon: Icons.menu_book_outlined,
-                      title: 'Glossaire',
-                      subtitle: 'Retrouver un terme technique',
+                    child: _CompactDoor(
+                      icon: Icons.radar_rounded,
+                      title: 'GéoChasse',
+                      description:
+                          'Créer un point secret et le retrouver dans un rayon défini.',
+                      color: AppTheme.coral,
+                      badge: '20 à 500 m',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const GlossaryScreen(),
+                          builder: (_) => GeocachingScreen(
+                            controller: controller,
+                          ),
                         ),
                       ),
                     ),
@@ -99,130 +91,26 @@ class TodayScreen extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               const SectionTitle(
-                title: 'Comment utiliser l’application',
-                subtitle: 'Une méthode simple en quatre temps.',
+                title: 'Dans ta poche',
+                subtitle:
+                    'Des contenus courts pour comprendre et s’entraîner sans menu inutile.',
               ),
               const SizedBox(height: 14),
-              const _MethodTimeline(),
-              const SizedBox(height: 28),
-              _SosCard(),
+              _LearningStrip(controller: controller),
             ]),
           ),
         ),
       ],
     );
   }
-
-  Widget _SosCard() {
-    return Builder(
-      builder: (context) => InkWell(
-        borderRadius: BorderRadius.circular(28),
-        onTap: () => showModalBottomSheet<void>(
-          context: context,
-          isScrollControlled: true,
-          showDragHandle: false,
-          builder: (_) => const SosGeomaticienSheet(),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            color: AppTheme.ink,
-            borderRadius: BorderRadius.circular(28),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.10),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: const Icon(Icons.support_agent_rounded,
-                    color: AppTheme.orange),
-              ),
-              const SizedBox(width: 15),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'SOS Géomaticien',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Diagnostiquer une couche décalée, une distance fausse ou une carte illisible.',
-                      style: TextStyle(
-                        color: Color(0xFFD7CED8),
-                        fontSize: 12.5,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              const Icon(Icons.arrow_forward_rounded, color: Colors.white),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-class _HelpButton extends StatelessWidget {
-  const _HelpButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: 'À propos de l’application',
-      onPressed: () => showModalBottomSheet<void>(
-        context: context,
-        showDragHandle: true,
-        builder: (context) => Padding(
-          padding: const EdgeInsets.fromLTRB(22, 8, 22, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('À quoi sert Moi, Géomaticien ?',
-                  style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 10),
-              const Text(
-                'L’application ne remplace pas un logiciel SIG. Elle t’aide à comprendre les notions, choisir une méthode, préparer un travail et éviter les erreurs courantes.',
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('J’ai compris'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      icon: const Icon(Icons.info_outline_rounded),
-    );
-  }
-}
-
-class _SignaturePanel extends StatelessWidget {
-  const _SignaturePanel({required this.controller});
-
+class _HeroPanel extends StatelessWidget {
+  const _HeroPanel({required this.controller});
   final AppController controller;
 
   @override
   Widget build(BuildContext context) {
-    final hasStarted = controller.xp > 0;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -240,19 +128,14 @@ class _SignaturePanel extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.10),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: const Text(
-                  'PARCOURS PERSONNEL',
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'TON ESPACE DÉMARRE À ZÉRO',
                   style: TextStyle(
                     color: AppTheme.orange,
                     fontSize: 10,
@@ -260,39 +143,41 @@ class _SignaturePanel extends StatelessWidget {
                     letterSpacing: 1.1,
                   ),
                 ),
-              ),
-              const Spacer(),
-              Text(
-                '${controller.xp} XP',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
+                const SizedBox(height: 13),
+                const Text(
+                  'Pas de faux projet.\nPas de score inventé.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    height: 1.15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -.5,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 23),
-          Text(
-            hasStarted
-                ? 'Poursuis là où tu progresses.'
-                : 'Ton espace est prêt. Tout commence à zéro.',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              height: 1.15,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -.5,
+                const SizedBox(height: 10),
+                Text(
+                  'Tes ${controller.geoPoints.length} point(s), tes fiches et tes exercices construisent progressivement ton vrai parcours.',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(.70),
+                    fontSize: 12.5,
+                    height: 1.45,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 9),
-          Text(
-            hasStarted
-                ? 'Chaque fiche et exercice validé construit ton profil de compétences.'
-                : 'Aucun faux score, aucun projet fictif. Tes résultats apparaîtront au fur et à mesure.',
-            style: TextStyle(
-              color: Colors.white.withOpacity(.72),
-              fontSize: 13,
-              height: 1.45,
+          const SizedBox(width: 16),
+          Container(
+            width: 78,
+            height: 110,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(.08),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: const Icon(
+              Icons.travel_explore_rounded,
+              color: Colors.white,
+              size: 39,
             ),
           ),
         ],
@@ -301,8 +186,8 @@ class _SignaturePanel extends StatelessWidget {
   }
 }
 
-class _PrimaryAction extends StatelessWidget {
-  const _PrimaryAction({
+class _FeatureDoor extends StatelessWidget {
+  const _FeatureDoor({
     required this.icon,
     required this.title,
     required this.description,
@@ -320,61 +205,60 @@ class _PrimaryAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(30),
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: AppTheme.ink.withOpacity(.06)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 64,
-              height: 84,
-              decoration: BoxDecoration(
-                color: color.withOpacity(.11),
-                borderRadius: BorderRadius.circular(22),
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(28),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                width: 66,
+                height: 92,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(.11),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Icon(icon, color: color, size: 31),
               ),
-              child: Icon(icon, color: color, size: 30),
-            ),
-            const SizedBox(width: 17),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 5),
-                  Text(description, style: Theme.of(context).textTheme.bodySmall),
-                  const SizedBox(height: 10),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
+              const SizedBox(width: 17),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 6),
+                    Text(description, style: Theme.of(context).textTheme.bodySmall),
+                    const SizedBox(height: 11),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: .5,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const Icon(Icons.arrow_forward_rounded),
-          ],
+              const Icon(Icons.arrow_forward_rounded),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _CompactAction extends StatelessWidget {
-  const _CompactAction({
+class _CompactDoor extends StatelessWidget {
+  const _CompactDoor({
     required this.icon,
     required this.title,
     required this.description,
     required this.color,
+    required this.badge,
     required this.onTap,
   });
 
@@ -382,65 +266,104 @@ class _CompactAction extends StatelessWidget {
   final String title;
   final String description;
   final Color color;
+  final String badge;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(28),
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 184),
-        padding: const EdgeInsets.all(19),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(28),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(.16),
-                borderRadius: BorderRadius.circular(15),
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(28),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 210),
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SoftIcon(icon: icon, color: color),
+                  const Spacer(),
+                  Icon(Icons.north_east_rounded, color: color, size: 19),
+                ],
               ),
-              child: Icon(icon, color: Colors.white),
-            ),
-            const Spacer(),
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
+              const Spacer(),
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 6),
+              Text(description, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(.10),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text(
+                  badge,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              description,
-              style: TextStyle(
-                color: Colors.white.withOpacity(.78),
-                fontSize: 11.5,
-                height: 1.35,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _SlimAction extends StatelessWidget {
-  const _SlimAction({
+class _LearningStrip extends StatelessWidget {
+  const _LearningStrip({required this.controller});
+  final AppController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _SmallAction(
+            icon: Icons.auto_stories_rounded,
+            title: 'Fiches',
+            subtitle: 'Comprendre une notion',
+            onTap: () => controller.setTab(1),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _SmallAction(
+            icon: Icons.task_alt_rounded,
+            title: 'Exercices',
+            subtitle: 'Raisonner sur un cas',
+            onTap: () => controller.setTab(2),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _SmallAction(
+            icon: Icons.sort_by_alpha_rounded,
+            title: 'Glossaire',
+            subtitle: 'Définir un terme',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const GlossaryScreen()),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SmallAction extends StatelessWidget {
+  const _SmallAction({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
-
   final IconData icon;
   final String title;
   final String subtitle;
@@ -449,23 +372,27 @@ class _SlimAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(24),
       onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        constraints: const BoxConstraints(minHeight: 122),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppTheme.ink.withOpacity(.06)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: AppTheme.coral),
-            const SizedBox(height: 14),
+            const Spacer(),
             Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
             const SizedBox(height: 3),
-            Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 10.5),
+            ),
           ],
         ),
       ),
@@ -473,62 +400,41 @@ class _SlimAction extends StatelessWidget {
   }
 }
 
-class _MethodTimeline extends StatelessWidget {
-  const _MethodTimeline();
+class _AboutButton extends StatelessWidget {
+  const _AboutButton();
 
   @override
   Widget build(BuildContext context) {
-    const steps = [
-      ('01', 'Comprendre', 'Lire une fiche courte et contextualisée.'),
-      ('02', 'Pratiquer', 'Prendre une décision dans un cas concret.'),
-      ('03', 'Produire', 'Structurer ton propre travail géomatique.'),
-      ('04', 'Progresser', 'Construire un profil basé sur tes résultats réels.'),
-    ];
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 6, 20, 6),
-        child: Column(
-          children: [
-            for (var index = 0; index < steps.length; index++) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      steps[index].$1,
-                      style: const TextStyle(
-                        color: AppTheme.coral,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            steps[index].$2,
-                            style: const TextStyle(fontWeight: FontWeight.w900),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            steps[index].$3,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    return IconButton(
+      tooltip: 'À propos',
+      onPressed: () => showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.fromLTRB(22, 8, 22, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('À quoi sert Moi, Géomaticien ?',
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 10),
+              const Text(
+                'À réviser des notions essentielles, relever rapidement des points avec le GPS du téléphone et apprendre par le jeu. Pour les travaux de haute précision, utilise un récepteur GNSS adapté.',
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('J’ai compris'),
                 ),
               ),
-              if (index != steps.length - 1) const Divider(),
             ],
-          ],
+          ),
         ),
       ),
+      icon: const Icon(Icons.info_outline_rounded),
     );
   }
 }

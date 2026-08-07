@@ -1,0 +1,7 @@
+Supprimer ces anciens fichiers du projet V2 s’ils sont encore présents :
+
+lib/screens/field_notebook_screen.dart
+lib/screens/project_builder_screen.dart
+lib/screens/produce_screen.dart
+lib/screens/quick_tools_screen.dart
+lib/widgets/sos_sheet.dart
