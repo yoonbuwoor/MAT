@@ -1,3 +1,10 @@
+# Correctif V3.0.1
+
+- Corrige le conflit de dépendances entre `geolocator 14.0.3` et `share_plus 11.1.0`.
+- Met `share_plus` à `^13.3.0`, compatible avec l’API `SharePlus.instance.share(ShareParams(...))` déjà utilisée pour l’export CSV.
+- Le workflow Android utilise désormais `flutter create --no-pub` avant le `flutter pub get` contrôlé.
+- Version application : `3.0.1+4`.
+
 # Journal des modifications — V3.0
 
 ## Interface
