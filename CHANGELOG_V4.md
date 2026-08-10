@@ -29,6 +29,8 @@
 
 - Correction du conflit de dépendances entre `file_picker` et `share_plus` qui
   bloquait `flutter pub get` avant la génération de l’AAB.
+- Verrouillage de `geolocator` en `14.0.2` afin d’éviter la dépendance
+  `geolocator_linux 0.2.6` / `package_info_plus 10` qui imposait `win32 6`.
 
 - Version portée à `4.0.0+6`.
 - Workflow GitHub Actions consacré au bundle `.aab` signé.
