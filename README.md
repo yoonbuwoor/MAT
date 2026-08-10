@@ -69,11 +69,12 @@ flutter run
 Le script de configuration ajoute les autorisations Android, le nom visible,
 l’icône, `minSdk 24` et la configuration de signature release.
 
-## Construire pour Google Play
+## Construire l’APK et l’AAB
 
-Le workflow `.github/workflows/main.yml` génère
-`Moi_Geomaticien_PlayStore.aab`. La clé d’upload n’est jamais stockée dans le
-dépôt : quatre secrets GitHub sont requis.
+Le workflow `.github/workflows/main.yml` génère simultanément
+`Moi_Geomaticien_Android.apk` pour l’installation directe et
+`Moi_Geomaticien_PlayStore.aab` pour Google Play. La clé d’upload n’est jamais
+stockée dans le dépôt : quatre secrets GitHub sont requis.
 
 Les instructions Windows et Play Console se trouvent dans
 [`PLAYSTORE_AAB.md`](PLAYSTORE_AAB.md).
@@ -82,8 +83,9 @@ Les instructions Windows et Play Console se trouvent dans
 
 ```text
 Package : com.novateur221.moi_geomaticien
-Version : 4.0.0+6
+Version : 4.0.0+7
 Format Play Store : Android App Bundle (.aab)
+Format installation directe : Android Package (.apk)
 ```
 
 ## Limite de précision

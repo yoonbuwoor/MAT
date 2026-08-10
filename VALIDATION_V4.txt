@@ -7,6 +7,8 @@ Contrôles effectués dans l’environnement de génération :
 - réponses correctes réparties entre les positions A, B, C et D ;
 - 29 logiciels documentés avec utilité, licence, plateforme et meilleur usage ;
 - ancien jeu de recherche de cible absent du code, des imports et des textes ;
+- bouton d’entrée protégé contre les erreurs et délais de localisation : la
+  navigation vers l’accueil reste toujours possible ;
 - analyse syntaxique de tous les fichiers Dart avec une grammaire tree-sitter : OK ;
 - imports Dart locaux : tous résolus ;
 - délimiteurs Dart et structure des constructeurs de données : conformes ;
@@ -22,13 +24,13 @@ Contrôles effectués dans l’environnement de génération :
   transformation correcte et idempotente ;
 - permissions ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION et lecture ancienne
   limitée à Android 9 vérifiées ;
-- signature release par clé d’upload et génération appbundle vérifiées dans le
-  workflow ;
+- signature release par clé d’upload et génération simultanée APK/appbundle
+  vérifiées dans le workflow ;
 - icônes Android : 1024 x 1024 ; premier plan adaptatif avec canal alpha ;
 - logo Moi, Géomaticien : balise, viseur et courbes de niveau, sans lettre N ;
 - fichier du logo Novateur221 conservé à l’identique (empreinte SHA-256 vérifiée) ;
 - aucun fichier de clé ou mot de passe inclus dans le projet.
 
 Limite de l’environnement : le SDK Flutter n’est pas installé localement. La
-commande flutter analyze, les tests Flutter et la compilation finale sont donc
-exécutés par le workflow GitHub Actions avant la création de l’AAB signé.
+commande flutter analyze, les tests Flutter et les compilations finales sont donc
+exécutés par le workflow GitHub Actions avant la création de l’APK et de l’AAB.

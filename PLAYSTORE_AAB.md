@@ -1,8 +1,13 @@
-# Générer l’AAB signé pour Google Play
+# Générer l’APK et l’AAB signés
 
-Le workflow `.github/workflows/main.yml` construit désormais un **Android App
-Bundle signé** nommé `Moi_Geomaticien_PlayStore.aab`. Il est prêt pour Google
-Play lorsque la clé d’upload a été configurée une seule fois dans GitHub.
+Le workflow `.github/workflows/main.yml` construit désormais les deux livrables
+signés au cours du même lancement :
+
+- `Moi_Geomaticien_Android.apk` pour installer et tester l’application ;
+- `Moi_Geomaticien_PlayStore.aab` pour la publier sur Google Play.
+
+Ils sont générés lorsque la clé d’upload a été configurée une seule fois dans
+GitHub.
 
 ## 1. Créer la clé d’upload sur Windows
 
@@ -39,9 +44,9 @@ Ne place jamais la clé JKS ni les mots de passe directement dans le dépôt.
 
 ## 3. Lancer la génération
 
-Pousse le projet sur la branche `main` ou ouvre **Actions → Construire AAB Play
-Store → Run workflow**. Une fois le travail terminé, télécharge l’artefact
-**Moi-Geomaticien-PlayStore-AAB**.
+Pousse le projet sur la branche `main` ou ouvre **Actions → Construire APK et
+AAB Android → Run workflow**. Une fois le travail terminé, télécharge
+l’artefact **Moi-Geomaticien-APK-et-AAB** : il contient les deux fichiers.
 
 Le workflow :
 
@@ -50,8 +55,8 @@ Le workflow :
 - ajoute les autorisations de localisation et l’accès CSV compatible Android ;
 - applique la nouvelle icône ;
 - analyse et teste l’application ;
-- signe le bundle avec la clé d’upload ;
-- vérifie puis publie `Moi_Geomaticien_PlayStore.aab`.
+- construit et signe l’APK et l’AAB avec la même clé d’upload ;
+- vérifie puis publie les deux fichiers dans un seul artefact.
 
 ## 4. Importer dans Play Console
 
@@ -68,7 +73,7 @@ Complète enfin avec exactitude la rubrique **Sécurité des données** selon le
 comportement de la version réellement publiée et les éventuels services que tu
 ajouterais plus tard.
 
-La version actuelle est `4.0.0+6`. Pour chaque nouvelle livraison, augmente au
+La version actuelle est `4.0.0+7`. Pour chaque nouvelle livraison, augmente au
 minimum le nombre situé après `+` dans `pubspec.yaml`.
 
 ## Autorisations et confidentialité

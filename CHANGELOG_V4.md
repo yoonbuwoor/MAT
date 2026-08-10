@@ -16,6 +16,8 @@
 
 ## Terrain et fichiers
 
+- Ouverture de l’application garantie même si le service de localisation est
+  indisponible, lent, refusé ou bloqué par le téléphone.
 - Demande de localisation déclenchée à l’entrée dans l’application.
 - Permissions Android réellement injectées lors de la génération du projet.
 - Nouvelle stratégie de mesure GPS avec seconde tentative et solution de repli.
@@ -36,7 +38,7 @@
   les registrants de plugins périmés.
 - Correction du widget contenant le nombre dynamique de cours.
 
-- Version portée à `4.0.0+6`.
-- Workflow GitHub Actions consacré au bundle `.aab` signé.
+- Version portée à `4.0.0+7` pour la livraison du correctif d’ouverture.
+- Workflow GitHub Actions générant simultanément l’APK et l’AAB signés.
 - Configuration sécurisée de la clé d’upload via quatre secrets GitHub.
-- Vérification du bundle avant sa publication comme artefact.
+- Vérification des deux fichiers avant leur publication dans un même artefact.

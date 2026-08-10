@@ -1,7 +1,7 @@
 name: moi_geomaticien
 description: Le livre de poche et compagnon terrain du géomaticien, par Novateur221.
 publish_to: "none"
-version: 4.0.0+6
+version: 4.0.0+7
 
 environment:
   sdk: ">=3.12.0 <4.0.0"
