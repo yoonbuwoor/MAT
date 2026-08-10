@@ -27,6 +27,9 @@
 
 ## Google Play
 
+- Correction du conflit de dépendances entre `file_picker` et `share_plus` qui
+  bloquait `flutter pub get` avant la génération de l’AAB.
+
 - Version portée à `4.0.0+6`.
 - Workflow GitHub Actions consacré au bundle `.aab` signé.
 - Configuration sécurisée de la clé d’upload via quatre secrets GitHub.
