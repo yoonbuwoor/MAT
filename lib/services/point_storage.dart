@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:cross_file/cross_file.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart' as file_selector;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../models/geo_models.dart';
 import 'coordinate_service.dart';
 
@@ -49,21 +51,26 @@ class PointStorage {
   }
 
   Future<PointImportResult> pickAndReadCsv() async {
-    final selection = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['csv'],
-      allowMultiple: false,
-      withData: true,
-      dialogTitle: 'Choisir un fichier CSV de points',
+    const csvTypeGroup = file_selector.XTypeGroup(
+      label: 'Fichiers CSV',
+      extensions: <String>['csv'],
+      mimeTypes: <String>[
+        'text/csv',
+        'text/comma-separated-values',
+        'application/csv',
+        'application/vnd.ms-excel',
+        'text/plain',
+      ],
     );
-    if (selection == null || selection.files.isEmpty) {
+    final picked = await file_selector.openFile(
+      acceptedTypeGroups: <file_selector.XTypeGroup>[csvTypeGroup],
+    );
+    if (picked == null) {
       return const PointImportResult.cancelled();
     }
 
-    final picked = selection.files.single;
-    final bytes = picked.bytes ??
-        (picked.path == null ? null : await File(picked.path!).readAsBytes());
-    if (bytes == null || bytes.isEmpty) {
+    final bytes = await picked.readAsBytes();
+    if (bytes.isEmpty) {
       throw const FormatException('Le fichier sélectionné est vide ou illisible.');
     }
 

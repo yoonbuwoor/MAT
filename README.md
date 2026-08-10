@@ -8,7 +8,7 @@ géomatique.
 
 - nouveau logo propre à Moi, Géomaticien (balise, viseur et courbes de niveau),
   utilisant uniquement le code couleur Novateur221 ;
-- 30 cours structurés, des fondamentaux au Web SIG, LiDAR et drone ;
+- 32 cours structurés, des fondamentaux au Web SIG, LiDAR et drone ;
 - 30 quiz corrigés, filtrables par niveau ;
 - catalogue de logiciels avec utilité, licence, plateforme et meilleur usage ;
 - retrait complet de l’ancien jeu de recherche de cible ;
@@ -55,9 +55,12 @@ base de données, Web SIG, collecte mobile, photogrammétrie et nuages de points
 
 ## Lancer le projet
 
+Utilise Flutter 3.44.9 ou une version compatible avec Dart 3.12, puis exécute :
+
 ```bash
-flutter pub get
 flutter create --org com.novateur221 --project-name moi_geomaticien --platforms android .
+flutter clean
+flutter pub get
 python3 tool/configure_android.py
 dart run flutter_launcher_icons
 flutter run

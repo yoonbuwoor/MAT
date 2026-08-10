@@ -21,8 +21,8 @@ if [ ! -d android ]; then
   cp -R "$generated_project/android" ./android
 fi
 
+flutter clean
 flutter pub get
 python3 tool/configure_android.py
 dart run flutter_launcher_icons
 flutter run
-

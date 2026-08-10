@@ -11,11 +11,12 @@ Contrôles effectués dans l’environnement de génération :
 - imports Dart locaux : tous résolus ;
 - délimiteurs Dart et structure des constructeurs de données : conformes ;
 - pubspec.yaml et workflow GitHub : YAML valide ;
-- ensemble de dépendances stabilisé autour de `win32 5` : `file_picker 11.0.3`,
-  `share_plus 12.0.2` et `geolocator 14.0.2`, sans changement des API de GPS,
-  d’import ou d’export CSV ;
-- appel d’import conforme à l’API statique de `file_picker 11` et texte du
-  compteur de cours correctement évalué à l’exécution ;
+- `file_picker` retiré ; import CSV via `file_selector 1.1.0`, le sélecteur
+  officiel compatible avec le Kotlin intégré de Flutter 3.44 ;
+- dépendances alignées sur Flutter 3.44.9 / Dart 3.12 :
+  `geolocator 14.0.3` et `share_plus 13.3.0` ;
+- lecture des octets du `XFile` sélectionné et texte du compteur de cours
+  correctement évalué à l’exécution ;
 - script tool/configure_android.py : syntaxe Python valide ;
 - script Android exécuté deux fois sur un manifeste et un Gradle Kotlin de test :
   transformation correcte et idempotente ;

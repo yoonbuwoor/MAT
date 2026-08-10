@@ -10,7 +10,7 @@
 
 ## Apprentissage
 
-- Bibliothèque portée à 30 cours avec recherche et filtres par domaine.
+- Bibliothèque portée à 32 cours avec recherche et filtres par domaine.
 - Banque portée à 30 quiz avec recherche, niveaux et corrections expliquées.
 - Ajout d’un catalogue de logiciels de géomatique et de leurs usages.
 
@@ -27,12 +27,14 @@
 
 ## Google Play
 
-- Correction du conflit de dépendances entre `file_picker` et `share_plus` qui
-  bloquait `flutter pub get` avant la génération de l’AAB.
-- Verrouillage de `geolocator` en `14.0.2` afin d’éviter la dépendance
-  `geolocator_linux 0.2.6` / `package_info_plus 10` qui imposait `win32 6`.
-- Adaptation à l’API statique de `file_picker 11` (`FilePicker.pickFiles`) et
-  correction d’un widget `const` contenant le nombre dynamique de cours.
+- Remplacement complet de `file_picker` par `file_selector 1.1.0`, le sélecteur
+  officiel Flutter, pour supprimer la régression Android
+  `FilePickerPlugin` introuvable.
+- Dépendances Android alignées sur Flutter 3.44.9 et le Kotlin intégré :
+  `geolocator 14.0.3`, `share_plus 13.3.0` et `file_selector`.
+- Nettoyage Flutter ajouté avant chaque résolution et compilation afin d’éviter
+  les registrants de plugins périmés.
+- Correction du widget contenant le nombre dynamique de cours.
 
 - Version portée à `4.0.0+6`.
 - Workflow GitHub Actions consacré au bundle `.aab` signé.

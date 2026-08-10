@@ -24,6 +24,8 @@ if not exist android (
   rmdir /s /q "%GENERATED_PROJECT%"
 )
 
+flutter clean
+if errorlevel 1 goto :error
 flutter pub get
 if errorlevel 1 goto :error
 python tool\configure_android.py
@@ -39,4 +41,3 @@ exit /b 0
 echo Une erreur est survenue.
 pause
 exit /b 1
-

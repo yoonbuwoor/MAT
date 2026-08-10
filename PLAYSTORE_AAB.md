@@ -46,6 +46,7 @@ Store → Run workflow**. Une fois le travail terminé, télécharge l’artefac
 Le workflow :
 
 - génère Android si le dossier n’existe pas ;
+- utilise Flutter 3.44.9 et nettoie les anciens artefacts de plugins ;
 - ajoute les autorisations de localisation et l’accès CSV compatible Android ;
 - applique la nouvelle icône ;
 - analyse et teste l’application ;
