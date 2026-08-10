@@ -49,7 +49,7 @@ class PointStorage {
   }
 
   Future<PointImportResult> pickAndReadCsv() async {
-    final selection = await FilePicker.platform.pickFiles(
+    final selection = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: const ['csv'],
       allowMultiple: false,

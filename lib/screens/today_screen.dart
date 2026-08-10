@@ -90,7 +90,7 @@ class TodayScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 28),
-              const SectionTitle(
+              SectionTitle(
                 title: 'Dans ta poche',
                 subtitle:
                     '${learningTopics.length} cours et des quiz pour progresser du niveau débutant au niveau avancé.',

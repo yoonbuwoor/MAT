@@ -31,6 +31,8 @@
   bloquait `flutter pub get` avant la génération de l’AAB.
 - Verrouillage de `geolocator` en `14.0.2` afin d’éviter la dépendance
   `geolocator_linux 0.2.6` / `package_info_plus 10` qui imposait `win32 6`.
+- Adaptation à l’API statique de `file_picker 11` (`FilePicker.pickFiles`) et
+  correction d’un widget `const` contenant le nombre dynamique de cours.
 
 - Version portée à `4.0.0+6`.
 - Workflow GitHub Actions consacré au bundle `.aab` signé.
