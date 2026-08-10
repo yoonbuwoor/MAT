@@ -3,7 +3,6 @@ import '../core/app_controller.dart';
 import '../core/app_theme.dart';
 import '../widgets/brand_widgets.dart';
 import 'current_location_screen.dart';
-import 'geocaching_screen.dart';
 import 'point_capture_screen.dart';
 
 class TerrainScreen extends StatelessWidget {
@@ -21,17 +20,17 @@ class TerrainScreen extends StatelessWidget {
             delegate: SliverChildListDelegate([
               const ScreenHeader(
                 eyebrow: 'Terrain',
-                title: 'Observer, relever, retrouver',
+                title: 'Se localiser et relever',
                 subtitle:
-                    'Trois fonctions simples autour de la position du téléphone, sans prétendre remplacer un récepteur GNSS professionnel.',
+                    'Deux fonctions fiables autour de la position du téléphone, sans prétendre remplacer un récepteur GNSS professionnel.',
               ),
               const SizedBox(height: 22),
               const PurposePanel(
                 icon: Icons.explore_rounded,
                 title: 'À quoi sert cet espace ?',
                 description:
-                    'À afficher une position dans plusieurs systèmes, constituer un petit jeu de points avec attributs et apprendre à se déplacer vers une cible.',
-                steps: ['Localiser', 'Documenter', 'Exporter ou jouer'],
+                    'À afficher une position dans plusieurs systèmes et constituer un jeu de points documentés que tu peux importer ou exporter en CSV.',
+                steps: ['Localiser', 'Documenter', 'Importer ou exporter'],
                 color: AppTheme.teal,
               ),
               const SizedBox(height: 24),
@@ -63,21 +62,6 @@ class TerrainScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
-              _TerrainDoor(
-                number: '03',
-                icon: Icons.radar_rounded,
-                title: 'GéoChasse',
-                description:
-                    'Crée un point secret et retrouve-le avec un radar, une distance, un cap et un rayon de réussite.',
-                color: AppTheme.coral,
-                trailing: 'Rayon max. 500 m',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => GeocachingScreen(controller: controller),
-                  ),
-                ),
-              ),
               const SizedBox(height: 22),
               Container(
                 padding: const EdgeInsets.all(18),
@@ -89,12 +73,12 @@ class TerrainScreen extends StatelessWidget {
                 child: const Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.health_and_safety_outlined,
+                    Icon(Icons.gps_fixed_rounded,
                         color: AppTheme.orange),
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Reste dans les espaces autorisés, ne traverse pas une route en regardant l’écran et n’utilise pas le jeu dans une zone dangereuse.',
+                        'Avant d’enregistrer, attends la stabilisation du GPS et vérifie la précision affichée. Une position de téléphone reste indicative.',
                         style: TextStyle(fontSize: 12.5, height: 1.45),
                       ),
                     ),

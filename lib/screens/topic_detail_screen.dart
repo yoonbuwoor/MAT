@@ -142,14 +142,14 @@ class TopicDetailScreen extends StatelessWidget {
                       controller.completeTopic(topic.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Fiche maîtrisée : +25 XP'),
+                          content: Text('Cours validé : +25 XP'),
                         ),
                       );
                     },
               icon: Icon(isDone ? Icons.verified_rounded : Icons.task_alt_rounded),
               label: Text(
                 isDone
-                    ? 'Cette fiche est déjà maîtrisée'
+                    ? 'Ce cours est déjà validé'
                     : 'J’ai compris cette notion',
               ),
             ),

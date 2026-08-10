@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../core/app_controller.dart';
 import '../core/app_theme.dart';
+import '../data/app_data.dart';
+import '../data/software_data.dart';
 import '../widgets/brand_widgets.dart';
 import 'current_location_screen.dart';
-import 'geocaching_screen.dart';
 import 'glossary_screen.dart';
 import 'point_capture_screen.dart';
+import 'software_catalog_screen.dart';
 
 class TodayScreen extends StatelessWidget {
   const TodayScreen({super.key, required this.controller});
@@ -24,7 +26,7 @@ class TodayScreen extends StatelessWidget {
                 eyebrow: 'Moi, Géomaticien',
                 title: 'Apprendre ici. Mesurer dehors.',
                 subtitle:
-                    'Un livre de poche clair et trois outils terrain réellement utiles : se localiser, relever des points et jouer au géocaching.',
+                    'Des cours, des quiz, un guide des logiciels et deux outils terrain utiles : se localiser et relever des points.',
                 trailing: const _AboutButton(),
               ),
               const SizedBox(height: 24),
@@ -72,17 +74,15 @@ class TodayScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _CompactDoor(
-                      icon: Icons.radar_rounded,
-                      title: 'GéoChasse',
+                      icon: Icons.apps_rounded,
+                      title: 'Logiciels SIG',
                       description:
-                          'Créer un point secret et le retrouver dans un rayon défini.',
+                          'Comprendre l’utilité des principaux outils de géomatique.',
                       color: AppTheme.coral,
-                      badge: '20 à 500 m',
+                      badge: '${geomaticsSoftware.length} outils',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => GeocachingScreen(
-                            controller: controller,
-                          ),
+                          builder: (_) => const SoftwareCatalogScreen(),
                         ),
                       ),
                     ),
@@ -93,7 +93,7 @@ class TodayScreen extends StatelessWidget {
               const SectionTitle(
                 title: 'Dans ta poche',
                 subtitle:
-                    'Des contenus courts pour comprendre et s’entraîner sans menu inutile.',
+                    '${learningTopics.length} cours et des quiz pour progresser du niveau débutant au niveau avancé.',
               ),
               const SizedBox(height: 14),
               _LearningStrip(controller: controller),
@@ -156,7 +156,7 @@ class _HeroPanel extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Tes ${controller.geoPoints.length} point(s), tes fiches et tes exercices construisent progressivement ton vrai parcours.',
+                  'Tes ${controller.geoPoints.length} point(s), tes cours et tes quiz construisent progressivement ton vrai parcours.',
                   style: TextStyle(
                     color: Colors.white.withOpacity(.70),
                     fontSize: 12.5,
@@ -327,7 +327,7 @@ class _LearningStrip extends StatelessWidget {
         Expanded(
           child: _SmallAction(
             icon: Icons.auto_stories_rounded,
-            title: 'Fiches',
+            title: 'Cours',
             subtitle: 'Comprendre une notion',
             onTap: () => controller.setTab(1),
           ),
@@ -335,9 +335,9 @@ class _LearningStrip extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: _SmallAction(
-            icon: Icons.task_alt_rounded,
-            title: 'Exercices',
-            subtitle: 'Raisonner sur un cas',
+            icon: Icons.quiz_rounded,
+            title: 'Quiz',
+            subtitle: 'Tester ses acquis',
             onTap: () => controller.setTab(2),
           ),
         ),
@@ -420,7 +420,7 @@ class _AboutButton extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 10),
               const Text(
-                'À réviser des notions essentielles, relever rapidement des points avec le GPS du téléphone et apprendre par le jeu. Pour les travaux de haute précision, utilise un récepteur GNSS adapté.',
+                'À apprendre les notions essentielles, choisir un logiciel adapté et relever des points avec le GPS du téléphone. Pour les travaux de haute précision, utilise un récepteur GNSS professionnel.',
               ),
               const SizedBox(height: 18),
               SizedBox(

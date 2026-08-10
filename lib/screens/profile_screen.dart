@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../core/app_controller.dart';
 import '../core/app_theme.dart';
+import '../services/location_service.dart';
 import '../widgets/brand_widgets.dart';
+import 'point_capture_screen.dart';
+import 'privacy_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key, required this.controller});
@@ -26,7 +29,7 @@ class ProfileScreen extends StatelessWidget {
                 eyebrow: 'Mon espace',
                 title: 'Une progression qui correspond à tes actions',
                 subtitle:
-                    'Les fiches comprises et les exercices réussis alimentent ton parcours. Les points GPS restent des données terrain et ne créent pas de faux score.',
+                    'Les cours validés et les quiz réussis alimentent ton parcours. Les points GPS restent des données terrain et ne créent pas de faux score.',
               ),
               const SizedBox(height: 22),
               _IdentityCard(controller: controller),
@@ -41,7 +44,7 @@ class ProfileScreen extends StatelessWidget {
                   Expanded(
                     child: _MetricCard(
                       value: '$completedTopics',
-                      label: 'Fiches comprises',
+                      label: 'Cours validés',
                       icon: Icons.auto_stories_rounded,
                       color: AppTheme.purple,
                     ),
@@ -50,8 +53,8 @@ class ProfileScreen extends StatelessWidget {
                   Expanded(
                     child: _MetricCard(
                       value: '$completedMissions',
-                      label: 'Exercices réussis',
-                      icon: Icons.task_alt_rounded,
+                      label: 'Quiz réussis',
+                      icon: Icons.quiz_rounded,
                       color: AppTheme.teal,
                     ),
                   ),
@@ -68,6 +71,32 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               _SettingsCard(controller: controller),
+              const SizedBox(height: 12),
+              _PermissionsCard(controller: controller),
+              const SizedBox(height: 12),
+              Card(
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 8,
+                  ),
+                  leading: const SoftIcon(
+                    icon: Icons.privacy_tip_outlined,
+                    color: AppTheme.purple,
+                  ),
+                  title: const Text(
+                    'Politique de confidentialité',
+                    style: TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  subtitle: const Text(
+                    'Localisation, fichiers, stockage et suppression.',
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_rounded),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PrivacyScreen()),
+                  ),
+                ),
+              ),
               const SizedBox(height: 18),
               if (hasProgress)
                 OutlinedButton.icon(
@@ -90,7 +119,7 @@ class ProfileScreen extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Remettre la progression à zéro ?'),
         content: const Text(
-          'Les fiches, exercices et XP seront réinitialisés. Les points GPS ne seront pas supprimés.',
+          'Les cours, quiz et XP seront réinitialisés. Les points GPS ne seront pas supprimés.',
         ),
         actions: [
           TextButton(
@@ -161,7 +190,7 @@ class _IdentityCard extends StatelessWidget {
                 Text(
                   controller.xp == 0
                       ? 'Le parcours est encore vierge.'
-                      : 'Continue avec une fiche ou un exercice.',
+                      : 'Continue avec un cours ou un quiz.',
                   style: TextStyle(
                     color: Colors.white.withOpacity(.65),
                     fontSize: 12,
@@ -252,6 +281,93 @@ class _SettingsCard extends StatelessWidget {
   }
 }
 
+class _PermissionsCard extends StatelessWidget {
+  const _PermissionsCard({required this.controller});
+
+  final AppController controller;
+
+  Future<void> _requestLocation(BuildContext context) async {
+    try {
+      await LocationService.requestPermission();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Localisation autorisée.')),
+      );
+    } on LocationServiceException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message),
+          action: SnackBarAction(
+            label: 'PARAMÈTRES',
+            onPressed: LocationService.openAppSettings,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Autorisations',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const SoftIcon(
+                icon: Icons.my_location_rounded,
+                color: AppTheme.teal,
+              ),
+              title: const Text(
+                'Localisation',
+                style: TextStyle(fontWeight: FontWeight.w900),
+              ),
+              subtitle: const Text(
+                'Nécessaire pour afficher la position et relever un point.',
+              ),
+              trailing: TextButton(
+                onPressed: () => _requestLocation(context),
+                child: const Text('Autoriser'),
+              ),
+            ),
+            const Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const SoftIcon(
+                icon: Icons.folder_open_rounded,
+                color: AppTheme.coral,
+              ),
+              title: const Text(
+                'Lecture de fichiers CSV',
+                style: TextStyle(fontWeight: FontWeight.w900),
+              ),
+              subtitle: const Text(
+                'Android demande l’accès uniquement au fichier choisi dans son sélecteur sécurisé.',
+              ),
+              trailing: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => PointCaptureScreen(controller: controller),
+                  ),
+                ),
+                child: const Text('Ouvrir'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _AboutCard extends StatelessWidget {
   const _AboutCard();
 
@@ -285,7 +401,7 @@ class _AboutCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 6),
                 Text(
-                  'Moi, Géomaticien associe apprentissage court, relevé de points et jeu géographique dans une interface simple.',
+                  'Moi, Géomaticien associe cours, quiz, guide des logiciels et relevé de points dans une interface claire.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],

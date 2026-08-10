@@ -50,8 +50,8 @@ class _ClassyNavigation extends StatelessWidget {
 
   static const items = <_NavItem>[
     _NavItem(Icons.home_outlined, Icons.home_rounded, 'Accueil'),
-    _NavItem(Icons.auto_stories_outlined, Icons.auto_stories_rounded, 'Fiches'),
-    _NavItem(Icons.task_alt_outlined, Icons.task_alt_rounded, 'Exercices'),
+    _NavItem(Icons.auto_stories_outlined, Icons.auto_stories_rounded, 'Cours'),
+    _NavItem(Icons.quiz_outlined, Icons.quiz_rounded, 'Quiz'),
     _NavItem(Icons.explore_outlined, Icons.explore_rounded, 'Terrain'),
     _NavItem(Icons.person_outline_rounded, Icons.person_rounded, 'Profil'),
   ];

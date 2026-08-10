@@ -78,6 +78,15 @@ class AppController extends ChangeNotifier {
 
   Future<String> exportGeoPoints() => _pointStorage.exportCsv(geoPoints);
 
+  Future<PointImportResult> importGeoPoints() async {
+    final result = await _pointStorage.pickAndReadCsv();
+    if (result.wasCancelled) return result;
+    geoPoints = <CapturedPoint>[...result.points, ...geoPoints];
+    notifyListeners();
+    await _pointStorage.savePoints(geoPoints);
+    return result;
+  }
+
   void resetProgress() {
     xp = 0;
     weeklyDone = 0;

@@ -1,104 +1,91 @@
-# Moi, Géomaticien — Version 3.0
+# Moi, Géomaticien — Version 4.0
 
-Application Flutter conçue par Novateur221 comme un livre de poche et un compagnon terrain pour les étudiants et professionnels de la géomatique.
+Application Flutter conçue par **Novateur221** comme livre de poche, guide des
+logiciels et compagnon de relevé pour les étudiants et professionnels de la
+géomatique.
 
-## Ce qui change dans la V3
+## Nouveautés principales
 
-Les fonctions suivantes ont été retirées :
+- nouveau logo propre à Moi, Géomaticien (balise, viseur et courbes de niveau),
+  utilisant uniquement le code couleur Novateur221 ;
+- 30 cours structurés, des fondamentaux au Web SIG, LiDAR et drone ;
+- 30 quiz corrigés, filtrables par niveau ;
+- catalogue de logiciels avec utilité, licence, plateforme et meilleur usage ;
+- retrait complet de l’ancien jeu de recherche de cible ;
+- relevé GPS fiabilisé avec nouvelle tentative et indication de qualité ;
+- import de points CSV par le sélecteur de fichiers sécurisé d’Android ;
+- export CSV partageable et conservation locale des relevés ;
+- génération d’un `.aab` signé pour Google Play.
 
-- recherche et filtres par domaine ;
-- atelier guidé de création de projet ;
-- liste de contrôle cartographique ;
-- ancien carnet de terrain ;
-- anciens convertisseurs rapides ;
-- SOS Géomaticien.
+## Localisation et relevé de points
 
-## Nouvelles fonctions terrain
+L’application demande l’autorisation de localisation après l’action d’entrée.
+Elle affiche X et Y dans les formats suivants :
 
-### Ma localisation
-
-- lecture de la position GPS du téléphone ;
-- affichage de X et Y selon le système choisi ;
 - WGS 84 en degrés décimaux ;
 - WGS 84 en degrés, minutes et secondes ;
-- UTM WGS 84 avec zone et EPSG déterminés automatiquement ;
-- Web Mercator EPSG:3857 ;
-- affichage de la précision et de l’altitude ;
-- copie rapide des coordonnées.
+- UTM WGS 84 avec zone et EPSG automatiques ;
+- Web Mercator — EPSG:3857.
 
-### Relever des points
+Chaque point peut contenir un nom, une catégorie, une description, la précision,
+l’altitude et des attributs personnalisés. Le relevé est conservé localement.
 
-- nom du point ;
-- catégorie et description ;
-- X, Y, altitude et précision ;
-- attributs personnalisés libres ;
-- conservation locale des points ;
-- suppression individuelle ou totale ;
-- export de tous les points en CSV ;
-- conservation des longitude/latitude WGS 84 dans chaque export.
+### Importer un CSV
 
-### GéoChasse
-
-- création d’un point secret depuis un point enregistré, des coordonnées manuelles ou la position actuelle ;
-- rayon de réussite de 100 m par défaut ;
-- rayon réglable de 20 à 500 m ;
-- coordonnées de la cible masquées pendant le jeu ;
-- radar visuel ;
-- distance restante ;
-- cap indicatif ;
-- indicateur chaud/froid ;
-- indice facultatif ;
-- message de victoire quand le joueur entre dans le rayon.
-
-## Icône Android corrigée
-
-Le logo Moi, Géomaticien est configuré comme icône Android classique et adaptative. Le workflow :
-
-1. crée Android si nécessaire ;
-2. ajoute les permissions GPS ;
-3. impose le nom « Moi, Géomaticien » ;
-4. génère les ressources `ic_launcher` ;
-5. vérifie que l’icône existe avant de compiler l’APK.
-
-Lors du premier test de cette V3, désinstalle l’ancienne application du téléphone avant d’installer le nouvel APK. Cela évite qu’un ancien raccourci ou le cache du lanceur conserve l’icône précédente.
-
-## Écran d’entrée
-
-L’utilisateur voit toujours au lancement :
-
-> Que nul n’entre ici s’il n’est Géomaticien.
-
-## Lancer sous Windows
-
-1. Installer Flutter, Android Studio, Java 17 et Python.
-2. Extraire le projet.
-3. Double-cliquer sur `INSTALLER_ET_LANCER.bat`.
-4. Autoriser la localisation lors du premier relevé.
-
-Le script génère Android, applique les permissions, installe les dépendances et génère le logo de l’application.
-
-## Construire avec GitHub Actions
-
-Le fichier `.github/workflows/main.yml` est prêt.
-
-1. Envoyer le contenu du projet sur GitHub.
-2. Ouvrir l’onglet **Actions**.
-3. Choisir **Construire APK Moi Geomaticien V3**.
-4. Cliquer sur **Run workflow**.
-5. Télécharger l’artifact **Moi-Geomaticien-V3-APK**.
-
-L’APK produit se nomme :
+Le bouton dossier du module **Relever des points** ouvre le sélecteur Android.
+L’utilisateur choisit précisément le fichier à lire ; l’application n’accède pas
+à tout le stockage. Les colonnes recommandées sont :
 
 ```text
-Moi_Geomaticien_V3.apk
+nom,categorie,description,longitude_wgs84,latitude_wgs84,precision_m,altitude_m,date_heure
 ```
 
-## Package Android
+Les variantes `longitude`, `lon`, `lng`, `x`, `latitude`, `lat` et `y` sont
+également reconnues lorsque les valeurs sont bien en WGS 84.
+
+## Contenus pédagogiques
+
+Les cours couvrent notamment : SCR et EPSG, projections, topologie, jointures,
+superpositions, réseaux, géostatistique, télédétection, NDVI/NDWI,
+photogrammétrie, MNT/MNS, LiDAR, collecte terrain, PostGIS, SQL spatial, services
+OGC, Python, OpenStreetMap, qualité et éthique.
+
+Le catalogue présente les principaux outils de SIG bureautique, télédétection,
+base de données, Web SIG, collecte mobile, photogrammétrie et nuages de points.
+
+## Lancer le projet
+
+```bash
+flutter pub get
+flutter create --org com.novateur221 --project-name moi_geomaticien --platforms android .
+python3 tool/configure_android.py
+dart run flutter_launcher_icons
+flutter run
+```
+
+Le script de configuration ajoute les autorisations Android, le nom visible,
+l’icône, `minSdk 24` et la configuration de signature release.
+
+## Construire pour Google Play
+
+Le workflow `.github/workflows/main.yml` génère
+`Moi_Geomaticien_PlayStore.aab`. La clé d’upload n’est jamais stockée dans le
+dépôt : quatre secrets GitHub sont requis.
+
+Les instructions Windows et Play Console se trouvent dans
+[`PLAYSTORE_AAB.md`](PLAYSTORE_AAB.md).
+
+## Identité Android
 
 ```text
-com.novateur221.moi_geomaticien
+Package : com.novateur221.moi_geomaticien
+Version : 4.0.0+6
+Format Play Store : Android App Bundle (.aab)
 ```
 
-## Précision importante
+## Limite de précision
 
-Le GPS d’un téléphone est adapté à l’apprentissage, au repérage et aux inventaires simples. Il ne remplace pas un récepteur GNSS professionnel pour les travaux cadastraux, topographiques ou centimétriques.
+Le GPS d’un téléphone convient à l’apprentissage, au repérage et à certains
+inventaires simples. Il ne remplace pas un récepteur GNSS professionnel pour les
+travaux cadastraux, topographiques ou centimétriques. La précision affichée doit
+toujours être conservée avec le point et interprétée selon la mission.

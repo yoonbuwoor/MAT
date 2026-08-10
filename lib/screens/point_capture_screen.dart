@@ -26,6 +26,7 @@ class _PointCaptureScreenState extends State<PointCaptureScreen> {
   Position? _position;
   bool _locating = false;
   bool _saving = false;
+  bool _importing = false;
   String? _error;
 
   @override
@@ -133,6 +134,39 @@ class _PointCaptureScreenState extends State<PointCaptureScreen> {
     }
   }
 
+  Future<void> _importCsv() async {
+    if (_importing) return;
+    setState(() => _importing = true);
+    try {
+      final result = await widget.controller.importGeoPoints();
+      if (!mounted || result.wasCancelled) return;
+      final rejected = result.rejectedRows == 0
+          ? ''
+          : ' • ${result.rejectedRows} ligne(s) ignorée(s)';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${result.points.length} point(s) importé(s) depuis ${result.fileName}$rejected',
+          ),
+        ),
+      );
+    } on FormatException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message.toString())),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Le fichier CSV n’a pas pu être lu.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _importing = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final position = _position;
@@ -148,6 +182,17 @@ class _PointCaptureScreenState extends State<PointCaptureScreen> {
       appBar: AppBar(
         title: const Text('Relever des points'),
         actions: [
+          IconButton(
+            tooltip: 'Importer un CSV',
+            onPressed: _importing ? null : _importCsv,
+            icon: _importing
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.folder_open_rounded),
+          ),
           IconButton(
             tooltip: 'Exporter en CSV',
             onPressed: widget.controller.geoPoints.isEmpty ? null : _export,
@@ -165,6 +210,28 @@ class _PointCaptureScreenState extends State<PointCaptureScreen> {
                 'Donne un nom au point, relève sa position, ajoute les attributs utiles puis exporte l’ensemble en CSV. Les coordonnées WGS 84 sont toujours conservées pour éviter toute perte.',
             steps: ['Nommer', 'Localiser', 'Enregistrer'],
             color: AppTheme.purple,
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.teal.withOpacity(.08),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppTheme.teal.withOpacity(.16)),
+            ),
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.folder_open_rounded, color: AppTheme.teal),
+                SizedBox(width: 11),
+                Expanded(
+                  child: Text(
+                    'Accès aux fichiers protégé : le sélecteur Android te demande de choisir précisément le CSV à lire. L’application n’accède pas au reste du stockage.',
+                    style: TextStyle(fontSize: 12.5, height: 1.45),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Form(
@@ -317,7 +384,7 @@ class _PointCaptureScreenState extends State<PointCaptureScreen> {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: _saving ? null : _savePoint,
+              onPressed: _saving || position == null ? null : _savePoint,
               icon: _saving
                   ? const SizedBox(
                       width: 18,
@@ -359,6 +426,21 @@ class _GpsCaptureCard extends StatelessWidget {
     // promotion sûre et évite les erreurs de compilation en mode release.
     final coordinate = displayed;
     final currentPosition = position;
+    final accuracy = currentPosition?.accuracy;
+    final qualityColor = accuracy == null
+        ? AppTheme.muted
+        : accuracy <= 5
+            ? AppTheme.teal
+            : accuracy <= 15
+                ? AppTheme.orange
+                : AppTheme.coral;
+    final qualityLabel = accuracy == null
+        ? ''
+        : accuracy <= 5
+            ? 'Bonne précision pour un inventaire courant'
+            : accuracy <= 15
+                ? 'Précision moyenne : patiente si possible'
+                : 'Précision faible : améliore la mesure';
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -410,9 +492,21 @@ class _GpsCaptureCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (currentPosition != null)
-              Text(
-                'Précision estimée : ±${currentPosition.accuracy.toStringAsFixed(1)} m',
-                style: TextStyle(color: Colors.white.withOpacity(.64)),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(11),
+                decoration: BoxDecoration(
+                  color: qualityColor.withOpacity(.16),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Text(
+                  '±${currentPosition.accuracy.toStringAsFixed(1)} m • $qualityLabel',
+                  style: TextStyle(
+                    color: qualityColor,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                  ),
+                ),
               ),
           ],
           const SizedBox(height: 16),
@@ -425,7 +519,13 @@ class _GpsCaptureCard extends StatelessWidget {
               ),
               onPressed: loading ? null : onLocate,
               icon: const Icon(Icons.my_location_rounded),
-              label: Text(loading ? 'MESURE EN COURS…' : 'PRENDRE LA POSITION'),
+              label: Text(
+                loading
+                    ? 'MESURE EN COURS…'
+                    : currentPosition == null
+                        ? 'PRENDRE LA POSITION'
+                        : 'AMÉLIORER LA MESURE',
+              ),
             ),
           ),
         ],

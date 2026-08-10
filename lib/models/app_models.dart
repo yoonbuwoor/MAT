@@ -33,6 +33,7 @@ class PracticeMission {
     required this.id,
     required this.title,
     required this.scenario,
+    required this.category,
     required this.level,
     required this.icon,
     required this.options,
@@ -43,9 +44,32 @@ class PracticeMission {
   final String id;
   final String title;
   final String scenario;
+  final String category;
   final String level;
   final IconData icon;
   final List<String> options;
   final int correctIndex;
   final String explanation;
+}
+
+class GeomaticsSoftware {
+  const GeomaticsSoftware({
+    required this.name,
+    required this.category,
+    required this.license,
+    required this.platforms,
+    required this.utility,
+    required this.bestFor,
+    required this.icon,
+    required this.color,
+  });
+
+  final String name;
+  final String category;
+  final String license;
+  final String platforms;
+  final String utility;
+  final String bestFor;
+  final IconData icon;
+  final Color color;
 }

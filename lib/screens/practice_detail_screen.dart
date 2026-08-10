@@ -27,7 +27,7 @@ class _PracticeDetailScreenState extends State<PracticeDetailScreen> {
   Widget build(BuildContext context) {
     final alreadyDone = widget.controller.completedMissions.contains(widget.mission.id);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.mission.level)),
+      appBar: AppBar(title: Text('Quiz • ${widget.mission.level}')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 30),
         children: [
@@ -64,7 +64,7 @@ class _PracticeDetailScreenState extends State<PracticeDetailScreen> {
           ),
           const SizedBox(height: 22),
           Text(
-            'Quelle est la meilleure décision ?',
+            'Quelle est la meilleure réponse ?',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                 ),
@@ -181,7 +181,7 @@ class _PracticeDetailScreenState extends State<PracticeDetailScreen> {
               width: double.infinity,
               child: FilledButton.tonal(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Retour aux missions'),
+                child: const Text('Retour aux quiz'),
               ),
             ),
           ],

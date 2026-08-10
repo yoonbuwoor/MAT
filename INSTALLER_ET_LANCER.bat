@@ -16,34 +16,17 @@ if errorlevel 1 (
 )
 
 if not exist android (
-  echo Creation du projet Android...
-  if exist .backup_source rmdir /s /q .backup_source
-  mkdir .backup_source
-  xcopy lib .backup_source\lib /E /I /Y >nul
-  xcopy assets .backup_source\assets /E /I /Y >nul
-  xcopy tool .backup_source\tool /E /I /Y >nul
-  copy pubspec.yaml .backup_source\pubspec.yaml >nul
-  copy analysis_options.yaml .backup_source\analysis_options.yaml >nul
-  if exist test xcopy test .backup_source\test /E /I /Y >nul
-
-  flutter create --org com.novateur221 --project-name moi_geomaticien --platforms=android .
+  echo Creation de la plateforme Android...
+  set "GENERATED_PROJECT=%TEMP%\moi_geomaticien_%RANDOM%_%RANDOM%"
+  flutter create --org com.novateur221 --project-name moi_geomaticien --platforms=android "%GENERATED_PROJECT%"
   if errorlevel 1 goto :error
-
-  if exist lib rmdir /s /q lib
-  if exist assets rmdir /s /q assets
-  if exist tool rmdir /s /q tool
-  xcopy .backup_source\lib lib /E /I /Y >nul
-  xcopy .backup_source\assets assets /E /I /Y >nul
-  xcopy .backup_source\tool tool /E /I /Y >nul
-  copy /Y .backup_source\pubspec.yaml pubspec.yaml >nul
-  copy /Y .backup_source\analysis_options.yaml analysis_options.yaml >nul
-  if exist .backup_source\test xcopy .backup_source\test test /E /I /Y >nul
-  rmdir /s /q .backup_source
+  xcopy "%GENERATED_PROJECT%\android" android\ /E /I /Y >nul
+  rmdir /s /q "%GENERATED_PROJECT%"
 )
 
-python tool\configure_android.py
-if errorlevel 1 goto :error
 flutter pub get
+if errorlevel 1 goto :error
+python tool\configure_android.py
 if errorlevel 1 goto :error
 dart run flutter_launcher_icons
 if errorlevel 1 goto :error
@@ -56,3 +39,4 @@ exit /b 0
 echo Une erreur est survenue.
 pause
 exit /b 1
+

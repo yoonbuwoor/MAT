@@ -114,19 +114,3 @@ class CapturedPoint {
         .toList();
   }
 }
-
-class GeocacheChallenge {
-  const GeocacheChallenge({
-    required this.title,
-    required this.latitude,
-    required this.longitude,
-    required this.radius,
-    required this.clue,
-  });
-
-  final String title;
-  final double latitude;
-  final double longitude;
-  final double radius;
-  final String clue;
-}

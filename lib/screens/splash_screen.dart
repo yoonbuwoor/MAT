@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../core/app_controller.dart';
 import '../core/app_theme.dart';
+import '../services/location_service.dart';
 import 'main_shell.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -51,7 +53,44 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _openApplication() async {
     if (_isOpening) return;
     setState(() => _isOpening = true);
-    await Future<void>.delayed(const Duration(milliseconds: 260));
+    final permission = await LocationService.permissionStatus();
+    final shouldRequestLocation = permission == LocationPermission.denied
+        ? await showDialog<bool>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => AlertDialog(
+                icon: const Icon(
+                  Icons.my_location_rounded,
+                  color: AppTheme.teal,
+                  size: 34,
+                ),
+                title: const Text('Autoriser la localisation ?'),
+                content: const Text(
+                  'Moi, Géomaticien utilise ta position précise uniquement lorsque l’application est ouverte, pour afficher X/Y et enregistrer les points que tu décides. Les positions restent sur ton téléphone et ne sont pas transmises à Novateur221.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Pas maintenant'),
+                  ),
+                  FilledButton.icon(
+                    onPressed: () => Navigator.pop(context, true),
+                    icon: const Icon(Icons.location_on_rounded),
+                    label: const Text('Autoriser'),
+                  ),
+                ],
+              ),
+            ) ??
+            false
+        : false;
+    if (shouldRequestLocation) {
+      try {
+        await LocationService.requestPermission();
+      } on LocationServiceException {
+        // L’utilisateur peut continuer et réautoriser depuis le module Terrain.
+      }
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 180));
     if (!mounted) return;
     await Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(

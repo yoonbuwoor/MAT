@@ -1,0 +1,325 @@
+import 'package:flutter/material.dart';
+import '../core/app_theme.dart';
+import '../models/app_models.dart';
+
+const geomaticsSoftware = <GeomaticsSoftware>[
+  GeomaticsSoftware(
+    name: 'QGIS',
+    category: 'SIG bureautique',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Créer des cartes, éditer des couches, effectuer des analyses spatiales et automatiser des traitements avec des extensions ou Python.',
+    bestFor: 'Études SIG, cartographie, apprentissage et production quotidienne.',
+    icon: Icons.map_rounded,
+    color: AppTheme.teal,
+  ),
+  GeomaticsSoftware(
+    name: 'ArcGIS Pro',
+    category: 'SIG bureautique',
+    license: 'Propriétaire',
+    platforms: 'Windows',
+    utility:
+        'Concevoir des projets SIG 2D/3D, gérer des géodatabases, analyser des réseaux et publier des contenus dans l’écosystème ArcGIS.',
+    bestFor: 'Organisations déjà équipées de la plateforme Esri.',
+    icon: Icons.layers_rounded,
+    color: AppTheme.purple,
+  ),
+  GeomaticsSoftware(
+    name: 'GRASS GIS',
+    category: 'Analyse spatiale',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Réaliser des analyses raster et vecteur avancées, de la modélisation hydrologique et des traitements de séries temporelles.',
+    bestFor: 'Analyses scientifiques reproductibles et traitements avancés.',
+    icon: Icons.grass_rounded,
+    color: Color(0xFF4A8A4F),
+  ),
+  GeomaticsSoftware(
+    name: 'SAGA GIS',
+    category: 'Analyse spatiale',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • Linux',
+    utility:
+        'Traiter les modèles numériques de terrain, calculer pentes, bassins versants, indices topographiques et interpolations.',
+    bestFor: 'Géomorphologie, relief, hydrologie et géostatistique.',
+    icon: Icons.terrain_rounded,
+    color: Color(0xFF8A6A3C),
+  ),
+  GeomaticsSoftware(
+    name: 'gvSIG Desktop',
+    category: 'SIG bureautique',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Visualiser, éditer et analyser des données géographiques dans de nombreux formats avec une approche SIG classique.',
+    bestFor: 'Cartographie et gestion de données dans un environnement libre.',
+    icon: Icons.public_rounded,
+    color: Color(0xFF397B76),
+  ),
+  GeomaticsSoftware(
+    name: 'Google Earth Pro',
+    category: 'Visualisation',
+    license: 'Gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Explorer rapidement un territoire en 3D, consulter des images historiques, créer des repères et partager des fichiers KML/KMZ.',
+    bestFor: 'Repérage, communication et première lecture visuelle d’une zone.',
+    icon: Icons.language_rounded,
+    color: Color(0xFF4267A8),
+  ),
+  GeomaticsSoftware(
+    name: 'Google Earth Engine',
+    category: 'Télédétection',
+    license: 'Service cloud',
+    platforms: 'Navigateur • Python',
+    utility:
+        'Analyser de grands catalogues d’images satellites dans le cloud, produire des séries temporelles et calculer des indices à grande échelle.',
+    bestFor: 'Suivi environnemental, agriculture et analyses multi-dates.',
+    icon: Icons.cloud_rounded,
+    color: Color(0xFF4379B8),
+  ),
+  GeomaticsSoftware(
+    name: 'ESA SNAP',
+    category: 'Télédétection',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Prétraiter et analyser les données Sentinel, notamment l’imagerie radar SAR et les produits optiques.',
+    bestFor: 'Chaînes de traitement Sentinel-1, Sentinel-2 et Sentinel-3.',
+    icon: Icons.satellite_alt_rounded,
+    color: Color(0xFF315D8A),
+  ),
+  GeomaticsSoftware(
+    name: 'ENVI',
+    category: 'Télédétection',
+    license: 'Propriétaire',
+    platforms: 'Windows • Linux',
+    utility:
+        'Effectuer des corrections, classifications, analyses spectrales et traitements d’images hyperspectrales.',
+    bestFor: 'Télédétection professionnelle et analyse spectrale avancée.',
+    icon: Icons.blur_on_rounded,
+    color: Color(0xFF6F5B9C),
+  ),
+  GeomaticsSoftware(
+    name: 'ERDAS IMAGINE',
+    category: 'Télédétection',
+    license: 'Propriétaire',
+    platforms: 'Windows',
+    utility:
+        'Préparer, mosaïquer, classifier et analyser des images aériennes ou satellitaires dans des chaînes de production.',
+    bestFor: 'Production institutionnelle d’images et de données raster.',
+    icon: Icons.image_search_rounded,
+    color: Color(0xFF8F4F7D),
+  ),
+  GeomaticsSoftware(
+    name: 'Orfeo ToolBox',
+    category: 'Télédétection',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Traiter de grandes images, segmenter, classifier et automatiser des chaînes de télédétection en ligne de commande ou dans QGIS.',
+    bestFor: 'Traitement reproductible d’images à haute résolution.',
+    icon: Icons.memory_rounded,
+    color: AppTheme.coral,
+  ),
+  GeomaticsSoftware(
+    name: 'PostgreSQL + PostGIS',
+    category: 'Base de données',
+    license: 'Libre et gratuit',
+    platforms: 'Serveur • Windows • Linux • macOS',
+    utility:
+        'Centraliser les données, contrôler leur qualité et exécuter des requêtes spatiales multi-utilisateurs avec indexation.',
+    bestFor: 'Bases SIG robustes, applications web et travail en équipe.',
+    icon: Icons.storage_rounded,
+    color: Color(0xFF416887),
+  ),
+  GeomaticsSoftware(
+    name: 'GeoServer',
+    category: 'Web SIG',
+    license: 'Libre et gratuit',
+    platforms: 'Serveur Java',
+    utility:
+        'Publier des cartes et données par des services standards comme WMS, WFS, WCS et tuiles web.',
+    bestFor: 'Diffusion de données SIG et alimentation de cartes interactives.',
+    icon: Icons.dns_rounded,
+    color: Color(0xFF3E7D61),
+  ),
+  GeomaticsSoftware(
+    name: 'MapServer',
+    category: 'Web SIG',
+    license: 'Libre et gratuit',
+    platforms: 'Serveur',
+    utility:
+        'Rendre rapidement des cartes et exposer des services géospatiaux à partir de fichiers ou bases de données.',
+    bestFor: 'Services cartographiques performants et architectures légères.',
+    icon: Icons.hub_rounded,
+    color: Color(0xFF4A7082),
+  ),
+  GeomaticsSoftware(
+    name: 'ArcGIS Online',
+    category: 'Web SIG',
+    license: 'Service propriétaire',
+    platforms: 'Navigateur • Mobile',
+    utility:
+        'Héberger, partager et raconter des données géographiques avec cartes web, tableaux de bord et applications configurables.',
+    bestFor: 'Publication rapide, collaboration et communication cartographique.',
+    icon: Icons.cloud_upload_rounded,
+    color: Color(0xFF4576A8),
+  ),
+  GeomaticsSoftware(
+    name: 'Leaflet',
+    category: 'Web SIG',
+    license: 'Libre et gratuit',
+    platforms: 'JavaScript • Navigateur',
+    utility:
+        'Développer des cartes interactives web légères avec marqueurs, couches, popups et extensions.',
+    bestFor: 'Sites cartographiques simples, rapides et adaptés au mobile.',
+    icon: Icons.web_rounded,
+    color: Color(0xFF4B8B48),
+  ),
+  GeomaticsSoftware(
+    name: 'OpenLayers',
+    category: 'Web SIG',
+    license: 'Libre et gratuit',
+    platforms: 'JavaScript • Navigateur',
+    utility:
+        'Construire des applications cartographiques web avancées avec projections, vecteurs, raster et services OGC.',
+    bestFor: 'Web SIG complexe et contrôle fin de l’affichage.',
+    icon: Icons.code_rounded,
+    color: Color(0xFF397A72),
+  ),
+  GeomaticsSoftware(
+    name: 'GDAL / OGR',
+    category: 'Traitement de données',
+    license: 'Libre et gratuit',
+    platforms: 'Ligne de commande • Bibliothèque',
+    utility:
+        'Convertir, reprojeter, découper, mosaïquer et inspecter presque tous les formats raster et vecteur courants.',
+    bestFor: 'Automatisation, conversion de formats et traitements par lots.',
+    icon: Icons.sync_alt_rounded,
+    color: Color(0xFF5D6E7A),
+  ),
+  GeomaticsSoftware(
+    name: 'FME Form / Flow',
+    category: 'Traitement de données',
+    license: 'Propriétaire',
+    platforms: 'Bureau • Serveur',
+    utility:
+        'Créer des chaînes ETL visuelles pour convertir, contrôler, enrichir et distribuer des données de multiples sources.',
+    bestFor: 'Intégration de données d’entreprise et automatisation sans code lourd.',
+    icon: Icons.account_tree_rounded,
+    color: Color(0xFFB36A28),
+  ),
+  GeomaticsSoftware(
+    name: 'Python + GeoPandas',
+    category: 'Programmation',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux • Cloud',
+    utility:
+        'Automatiser les analyses vecteur, nettoyer des données et construire des traitements reproductibles avec l’écosystème Python.',
+    bestFor: 'Scripts SIG, science des données et chaînes automatisées.',
+    icon: Icons.terminal_rounded,
+    color: Color(0xFF4D6C91),
+  ),
+  GeomaticsSoftware(
+    name: 'R + sf / terra',
+    category: 'Programmation',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Analyser des données spatiales, réaliser des statistiques, traiter des rasters et produire des graphiques reproductibles.',
+    bestFor: 'Recherche, géostatistique et rapports scientifiques.',
+    icon: Icons.functions_rounded,
+    color: Color(0xFF516DA8),
+  ),
+  GeomaticsSoftware(
+    name: 'JOSM',
+    category: 'OpenStreetMap',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Éditer OpenStreetMap avec validation, imagerie de fond, préréglages et outils adaptés aux campagnes de cartographie.',
+    bestFor: 'Contribution OSM avancée et contrôle qualité.',
+    icon: Icons.edit_location_alt_rounded,
+    color: Color(0xFF4A8A4F),
+  ),
+  GeomaticsSoftware(
+    name: 'QField',
+    category: 'Collecte terrain',
+    license: 'Libre et gratuit',
+    platforms: 'Android • iOS',
+    utility:
+        'Emporter un projet QGIS sur le terrain, saisir des formulaires, relever des géométries et synchroniser les modifications.',
+    bestFor: 'Inventaires et collecte mobile connectée à QGIS.',
+    icon: Icons.smartphone_rounded,
+    color: AppTheme.teal,
+  ),
+  GeomaticsSoftware(
+    name: 'KoboToolbox',
+    category: 'Collecte terrain',
+    license: 'Libre + service cloud',
+    platforms: 'Navigateur • Android',
+    utility:
+        'Concevoir des formulaires, collecter des réponses géolocalisées hors connexion et centraliser les enquêtes.',
+    bestFor: 'Enquêtes, humanitaire, suivi-évaluation et collecte structurée.',
+    icon: Icons.assignment_rounded,
+    color: Color(0xFF3C7891),
+  ),
+  GeomaticsSoftware(
+    name: 'OpenDroneMap / WebODM',
+    category: 'Photogrammétrie',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux • Serveur',
+    utility:
+        'Transformer des images drone en orthophoto, nuage de points, modèle 3D, MNS et produits cartographiques.',
+    bestFor: 'Photogrammétrie ouverte et traitement local ou serveur.',
+    icon: Icons.flight_rounded,
+    color: AppTheme.coral,
+  ),
+  GeomaticsSoftware(
+    name: 'Agisoft Metashape',
+    category: 'Photogrammétrie',
+    license: 'Propriétaire',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Aligner des images, intégrer des points de contrôle et produire orthomosaïques, modèles 3D et nuages de points.',
+    bestFor: 'Projets photogrammétriques professionnels et contrôle précis.',
+    icon: Icons.view_in_ar_rounded,
+    color: Color(0xFF8F4F7D),
+  ),
+  GeomaticsSoftware(
+    name: 'Pix4Dmatic / Pix4Dmapper',
+    category: 'Photogrammétrie',
+    license: 'Propriétaire',
+    platforms: 'Windows • macOS selon le produit',
+    utility:
+        'Produire des livrables photogrammétriques à partir d’images drone avec rapports de qualité et flux orientés métier.',
+    bestFor: 'Cartographie drone, inspection, agriculture et grands jeux d’images.',
+    icon: Icons.camera_alt_rounded,
+    color: Color(0xFF7A556F),
+  ),
+  GeomaticsSoftware(
+    name: 'CloudCompare',
+    category: '3D et LiDAR',
+    license: 'Libre et gratuit',
+    platforms: 'Windows • macOS • Linux',
+    utility:
+        'Visualiser, nettoyer, comparer et mesurer des nuages de points issus du LiDAR, de scanners ou de photogrammétrie.',
+    bestFor: 'Contrôle qualité 3D, distances entre nuages et segmentation.',
+    icon: Icons.scatter_plot_rounded,
+    color: Color(0xFF55698A),
+  ),
+  GeomaticsSoftware(
+    name: 'PDAL',
+    category: '3D et LiDAR',
+    license: 'Libre et gratuit',
+    platforms: 'Ligne de commande • Bibliothèque',
+    utility:
+        'Construire des pipelines reproductibles de lecture, filtrage, classification et conversion de nuages de points.',
+    bestFor: 'Automatisation LiDAR et traitement de grands volumes.',
+    icon: Icons.grain_rounded,
+    color: Color(0xFF657580),
+  ),
+];
